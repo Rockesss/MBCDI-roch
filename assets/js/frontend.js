@@ -885,6 +885,19 @@
                 });
             }
 
+            function revealStartOptions() {
+                if (!selectStart) return;
+                var options = selectStart.querySelectorAll('option');
+                options.forEach(function(opt) {
+                    opt.style.display = '';
+                });
+            }
+
+            if (selectStart) {
+                selectStart.addEventListener('focus', revealStartOptions);
+                selectStart.addEventListener('mousedown', revealStartOptions);
+            }
+
             if (btnSearch) {
                 btnSearch.addEventListener('click', searchRoute);
             }
@@ -1564,6 +1577,8 @@
                     return;
                 }
 
+                showCommerceCard(commerce, false);
+
                 var startLat = startVal === 'geoloc'
                     ? (state.userPosition ? state.userPosition.lat : null)
                     : (startVal ? parseFloat(startVal.split(',')[0]) : (state.userPosition ? state.userPosition.lat : null));
@@ -1813,6 +1828,11 @@
                             if (nearest) {
                                 var coordsValue = nearest.lat + ',' + nearest.lng;
                                 selectStart.value = coordsValue;
+                                var selectedOption = selectStart.querySelector('option[value="' + coordsValue + '"]');
+                                if (selectedOption) {
+                                    selectedOption.selected = true;
+                                    selectedOption.style.display = '';
+                                }
                                 mbcdiDebug('] Point de départ sélectionné:', nearest.label);
 
                                 var tempMsg = document.createElement('div');
