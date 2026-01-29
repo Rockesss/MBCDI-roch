@@ -1197,6 +1197,9 @@
                     state.walkingLineLayer = null;
                 }
 
+                // Réafficher tous les points de départ et zones de livraison
+                showAllRoutePoints();
+
                 hideBottomSheet();
             }
 
@@ -1304,6 +1307,8 @@
                     var icon = createSquareIcon(sp.iconUrl, '🚪');
                     var m = L.marker([sp.lat, sp.lng], { icon: icon }).addTo(state.map);
                     if (sp.label) m.bindPopup('<strong>' + escapeHtml(sp.label) + '</strong>');
+                    // Stocker l'ID du point de départ dans le marqueur
+                    m.mbcdiStartPointId = sp.id;
                     state.startPointMarkers.push(m);
                 });
             }
@@ -1315,12 +1320,16 @@
                     if (z.geometry && z.geometry.length >= 3) {
                         var latlngs = z.geometry.map(function(p) { return [p.lat, p.lng]; });
                         var poly = L.polygon(latlngs, { color: color, fillColor: color, fillOpacity: 0.18, weight: 2 }).addTo(state.map);
+                        // Stocker l'ID de la zone sur le polygone
+                        poly.mbcdiDeliveryZoneId = z.id;
                         state.deliveryZonePolygons.push(poly);
                     }
                     if (z.lat && z.lng) {
                         var icon = createSquareIcon(z.iconUrl, '🅿️');
                         var mz = L.marker([z.lat, z.lng], { icon: icon }).addTo(state.map);
                         mz.bindPopup('<strong>' + escapeHtml(z.name || 'Zone de livraison') + '</strong>');
+                        // Stocker l'ID de la zone sur le marqueur
+                        mz.mbcdiDeliveryZoneId = z.id;
                         state.deliveryZoneMarkers.push(mz);
                     }
                 });
@@ -1611,6 +1620,99 @@
                 calculateRoute();
             }
 
+            /**
+             * Masque les points de départ et zones de livraison non utilisés pendant l'affichage d'un itinéraire
+             * @param {number|string} activeStartPointId - ID du point de départ utilisé
+             * @param {number|string} activeDeliveryZoneId - ID de la zone de livraison utilisée
+             */
+            function hideUnusedRoutePoints(activeStartPointId, activeDeliveryZoneId) {
+                // Masquer tous les points de départ sauf celui utilisé
+                if (state.startPointMarkers && state.startPointMarkers.length) {
+                    state.startPointMarkers.forEach(function(marker) {
+                        var markerId = marker.mbcdiStartPointId;
+                        if (markerId && markerId.toString() === activeStartPointId.toString()) {
+                            // Point de départ utilisé : afficher avec effet pulse
+                            marker.setOpacity(1);
+                            var iconElement = marker.getElement();
+                            if (iconElement) {
+                                var markerDiv = iconElement.querySelector('.mbcdi-square-marker');
+                                if (markerDiv) {
+                                    markerDiv.classList.add('mbcdi-pulse-marker');
+                                }
+                            }
+                        } else {
+                            // Point de départ non utilisé : masquer
+                            marker.setOpacity(0);
+                        }
+                    });
+                }
+
+                // Masquer toutes les zones de livraison sauf celle utilisée
+                if (state.deliveryZoneMarkers && state.deliveryZoneMarkers.length) {
+                    state.deliveryZoneMarkers.forEach(function(marker) {
+                        var zoneId = marker.mbcdiDeliveryZoneId;
+                        if (zoneId && zoneId.toString() === activeDeliveryZoneId.toString()) {
+                            // Zone utilisée : afficher
+                            marker.setOpacity(1);
+                        } else {
+                            // Zone non utilisée : masquer
+                            marker.setOpacity(0);
+                        }
+                    });
+                }
+
+                // Masquer tous les polygones de zones sauf celui utilisé
+                if (state.deliveryZonePolygons && state.deliveryZonePolygons.length) {
+                    state.deliveryZonePolygons.forEach(function(polygon) {
+                        var zoneId = polygon.mbcdiDeliveryZoneId;
+                        if (zoneId && zoneId.toString() === activeDeliveryZoneId.toString()) {
+                            // Zone utilisée : afficher
+                            polygon.setStyle({ opacity: 1, fillOpacity: 0.18 });
+                        } else {
+                            // Zone non utilisée : masquer
+                            polygon.setStyle({ opacity: 0, fillOpacity: 0 });
+                        }
+                    });
+                }
+
+                mbcdiDebug('[MBCDI] Points masqués - Point actif:', activeStartPointId, 'Zone active:', activeDeliveryZoneId);
+            }
+
+            /**
+             * Réaffiche tous les points de départ et zones de livraison (retire le masquage)
+             */
+            function showAllRoutePoints() {
+                // Réafficher tous les points de départ et retirer le pulse
+                if (state.startPointMarkers && state.startPointMarkers.length) {
+                    state.startPointMarkers.forEach(function(marker) {
+                        marker.setOpacity(1);
+                        var iconElement = marker.getElement();
+                        if (iconElement) {
+                            var markerDiv = iconElement.querySelector('.mbcdi-square-marker');
+                            if (markerDiv) {
+                                markerDiv.classList.remove('mbcdi-pulse-marker');
+                            }
+                        }
+                    });
+                }
+
+                // Réafficher tous les marqueurs de zones
+                if (state.deliveryZoneMarkers && state.deliveryZoneMarkers.length) {
+                    state.deliveryZoneMarkers.forEach(function(marker) {
+                        marker.setOpacity(1);
+                    });
+                }
+
+                // Réafficher tous les polygones de zones
+                if (state.deliveryZonePolygons && state.deliveryZonePolygons.length) {
+                    state.deliveryZonePolygons.forEach(function(polygon) {
+                        polygon.setStyle({ opacity: 1, fillOpacity: 0.18 });
+                    });
+                }
+
+                mbcdiDebug('[MBCDI] Tous les points réaffichés');
+            }
+
             function calculateRoute() {
                 // V5.0.6: Itinéraire FIXE du BO + tracé piéton OSRM
                 // Le serveur retourne 2 tracés distincts
@@ -1717,6 +1819,11 @@
                             state.map.fitBounds(allBounds, { padding: [80, 120] });
                         } else if (state.routeLayer) {
                             state.map.fitBounds(state.routeLayer.getBounds(), { padding: [80, 120] });
+                        }
+
+                        // Masquer les points de départ et zones de livraison non utilisés
+                        if (route.start_point_id && route.delivery_zone_id) {
+                            hideUnusedRoutePoints(route.start_point_id, route.delivery_zone_id);
                         }
 
                         showResult(route);
