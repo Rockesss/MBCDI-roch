@@ -874,17 +874,6 @@
                     state.isExpanded = false;
                 });
             }
-
-            // Note: La synchronisation entre les inputs est maintenant gérée par l'autocomplétion
-
-            if (selectStart) {
-                selectStart.addEventListener('change', function() {
-                    if (this.value === 'geoloc') {
-                        geolocateUser();
-                    }
-                });
-            }
-
             function revealStartOptions() {
                 if (!selectStart) return;
                 var options = selectStart.querySelectorAll('option');
@@ -897,6 +886,7 @@
                 selectStart.addEventListener('focus', revealStartOptions);
                 selectStart.addEventListener('mousedown', revealStartOptions);
             }
+            // Note: La synchronisation entre les inputs est maintenant gérée par l'autocomplétion
 
             if (btnSearch) {
                 btnSearch.addEventListener('click', searchRoute);
@@ -1576,8 +1566,7 @@
                     showFieldError(selectDest, 'Ce commerce n\'a pas d\'itinéraire configuré');
                     return;
                 }
-
-                showCommerceCard(commerce, false);
+                   showCommerceCard(commerce, false);
 
                 var startLat = startVal === 'geoloc'
                     ? (state.userPosition ? state.userPosition.lat : null)
@@ -1828,11 +1817,6 @@
                             if (nearest) {
                                 var coordsValue = nearest.lat + ',' + nearest.lng;
                                 selectStart.value = coordsValue;
-                                var selectedOption = selectStart.querySelector('option[value="' + coordsValue + '"]');
-                                if (selectedOption) {
-                                    selectedOption.selected = true;
-                                    selectedOption.style.display = '';
-                                }
                                 mbcdiDebug('] Point de départ sélectionné:', nearest.label);
 
                                 var tempMsg = document.createElement('div');
