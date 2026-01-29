@@ -49,7 +49,8 @@
                 console.error('[MBCDI Integration] Bottom sheet non trouvé');
                 return;
             }
-            bottomSheet.classList.add('mbcdi-visible');
+            // Le bottom sheet v5.5.0 est visible par défaut (partiellement)
+            // Pas besoin d'ajouter 'mbcdi-visible'
             window.MBCDI_BSManager.init(bottomSheetBody, bottomSheet, handle);
             window.MBCDI_BSManager.showList(commerces);
 
