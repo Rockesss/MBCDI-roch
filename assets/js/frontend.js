@@ -1135,7 +1135,7 @@
                 html +=       '<h4 class="mbcdi-route-section-title">🗺️ Itinéraire</h4>';
                 html +=       '<div class="mbcdi-route-loading">Calcul en cours...</div>';
                 html +=       '<div class="mbcdi-route-content" style="display:none;"></div>';
-                html +=       '<button type="button" class="mbcdi-btn-back mbcdi-btn-back-to-list">← Choisir un autre commerce</button>';
+                html +=       '<button type="button" class="mbcdi-btn-back mbcdi-btn-back-to-list">← Retour à la carte</button>';
                 html +=     '</div>';
 
                 html +=   '</div>';
@@ -1183,24 +1183,8 @@
             }
 
             function resetCommerceSelection() {
-                state.selectedCommerceId = null;
-                state.selectedCommerce = null;
-                state.selectedZone = null;
-                state.destPosition = null;
-
-                if (state.routeLayer) {
-                    try { state.map.removeLayer(state.routeLayer); } catch (e) {}
-                    state.routeLayer = null;
-                }
-                if (state.walkingLineLayer) {
-                    try { state.map.removeLayer(state.walkingLineLayer); } catch (e) {}
-                    state.walkingLineLayer = null;
-                }
-
-                // Réafficher tous les points de départ et zones de livraison
-                showAllRoutePoints();
-
-                hideBottomSheet();
+                // Utiliser la nouvelle fonction resetRoute qui fait tout
+                resetRoute();
             }
 
             function renderStepsHTML(route) {
@@ -1633,13 +1617,16 @@
                         if (markerId && markerId.toString() === activeStartPointId.toString()) {
                             // Point de départ utilisé : afficher avec effet pulse
                             marker.setOpacity(1);
-                            var iconElement = marker.getElement();
-                            if (iconElement) {
-                                var markerDiv = iconElement.querySelector('.mbcdi-square-marker');
-                                if (markerDiv) {
-                                    markerDiv.classList.add('mbcdi-pulse-marker');
+                            // Utiliser setTimeout pour s'assurer que l'élément est dans le DOM
+                            setTimeout(function() {
+                                var iconElement = marker.getElement();
+                                if (iconElement) {
+                                    var markerDiv = iconElement.querySelector('.mbcdi-square-marker');
+                                    if (markerDiv) {
+                                        markerDiv.classList.add('mbcdi-pulse-marker');
+                                    }
                                 }
-                            }
+                            }, 100);
                         } else {
                             // Point de départ non utilisé : masquer
                             marker.setOpacity(0);
@@ -1675,7 +1662,22 @@
                     });
                 }
 
-                mbcdiDebug('[MBCDI] Points masqués - Point actif:', activeStartPointId, 'Zone active:', activeDeliveryZoneId);
+                // Masquer tous les commerces sauf celui sélectionné
+                if (state.commerceClusterGroup && state.selectedCommerceId) {
+                    state.commerceClusterGroup.eachLayer(function(layer) {
+                        if (layer.commerceData && layer.commerceData.id) {
+                            if (layer.commerceData.id === state.selectedCommerceId) {
+                                // Commerce sélectionné : afficher
+                                layer.setOpacity(1);
+                            } else {
+                                // Commerce non sélectionné : masquer
+                                layer.setOpacity(0);
+                            }
+                        }
+                    });
+                }
+
+                mbcdiDebug('[MBCDI] Points masqués - Point actif:', activeStartPointId, 'Zone active:', activeDeliveryZoneId, 'Commerce:', state.selectedCommerceId);
             }
 
             /**
@@ -1710,7 +1712,81 @@
                     });
                 }
 
-                mbcdiDebug('[MBCDI] Tous les points réaffichés');
+                // Réafficher tous les commerces
+                if (state.commerceClusterGroup) {
+                    state.commerceClusterGroup.eachLayer(function(layer) {
+                        layer.setOpacity(1);
+                    });
+                }
+
+                mbcdiDebug('[MBCDI] Tous les points et commerces réaffichés');
+            }
+
+            /**
+             * Réinitialise l'itinéraire et revient à l'écran de base
+             */
+            function resetRoute() {
+                mbcdiDebug('[MBCDI] Réinitialisation de l\'itinéraire');
+
+                // Effacer les tracés de la carte
+                if (state.routeLayer) {
+                    try { state.map.removeLayer(state.routeLayer); } catch (e) {}
+                    state.routeLayer = null;
+                }
+
+                if (state.walkingLineLayer) {
+                    try { state.map.removeLayer(state.walkingLineLayer); } catch (e) {}
+                    state.walkingLineLayer = null;
+                }
+
+                // Réafficher tous les points et commerces
+                showAllRoutePoints();
+
+                // Réinitialiser les sélections
+                state.selectedCommerceId = 0;
+                state.selectedCommerce = null;
+                state.currentRoute = null;
+
+                // Cacher le bottomsheet
+                if (bottomSheet) {
+                    bottomSheet.classList.remove('mbcdi-visible');
+                    bottomSheet.classList.remove('mbcdi-expanded');
+                }
+
+                // Réinitialiser le zoom pour afficher toute la destination
+                if (state.selectedDestinationId && data.destinations) {
+                    var dest = data.destinations.find(function(d) { return d.id === state.selectedDestinationId; });
+                    if (dest) {
+                        var bounds = L.latLngBounds([]);
+
+                        // Inclure la zone de chantier
+                        if (dest.zone && dest.zone.points && dest.zone.points.length > 0) {
+                            dest.zone.points.forEach(function(p) {
+                                bounds.extend([p.lat, p.lng]);
+                            });
+                        }
+
+                        // Inclure les points de départ
+                        if (data.startPoints && data.startPoints.length) {
+                            data.startPoints.forEach(function(sp) {
+                                if (sp.lat && sp.lng) bounds.extend([sp.lat, sp.lng]);
+                            });
+                        }
+
+                        // Inclure les zones de livraison
+                        if (data.deliveryZones && data.deliveryZones.length) {
+                            data.deliveryZones.forEach(function(z) {
+                                if (z.lat && z.lng) bounds.extend([z.lat, z.lng]);
+                            });
+                        }
+
+                        if (bounds.isValid()) {
+                            state.map.fitBounds(bounds, { padding: [50, 50] });
+                        }
+                    }
+                }
+
+                mbcdiDebug('[MBCDI] Itinéraire réinitialisé');
             }
 
             function calculateRoute() {
