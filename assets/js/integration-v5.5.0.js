@@ -50,6 +50,8 @@
                 return;
             }
 
+            bottomSheet.classList.add('mbcdi-visible');
+
             window.MBCDI_BSManager.init(bottomSheetBody, bottomSheet, handle);
             window.MBCDI_BSManager.showList(commerces);
 
