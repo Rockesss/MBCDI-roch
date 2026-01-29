@@ -184,27 +184,31 @@ class MBCDI_Ajax_Handler {
         $response = [
             'source' => 'hybrid_v5.1',
             'delivery_type' => 'zone',
-            
+
             'vehicle_route' => [
                 'geometry' => $fixed_route['geometry'],
                 'distance' => $fixed_route['distance'] ?? 0,
                 'duration' => $fixed_route['duration'] ?? 0,
                 'profile' => $profile,
             ],
-            
+
             'walking_route' => [
                 'geometry' => $walking_geometry,
                 'distance' => $walking_distance,
                 'duration' => $walking_duration,
             ],
-            
+
             'zone_name' => $zone_name,
             'zone_lat' => $zone_lat,
             'zone_lng' => $zone_lng,
             'commerce_name' => $commerce_name,
             'commerce_lat' => $commerce_lat,
             'commerce_lng' => $commerce_lng,
-            
+
+            // IDs pour masquer les points non utilisés
+            'start_point_id' => $start_point_id,
+            'delivery_zone_id' => $delivery_zone_id,
+
             // Compatibilité
             'geometry' => $fixed_route['geometry'],
             'distance' => ( $fixed_route['distance'] ?? 0 ) + $walking_distance,
