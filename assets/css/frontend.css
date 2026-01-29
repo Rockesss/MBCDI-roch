@@ -1,0 +1,764 @@
+/**
+ * MBCDI Frontend Layout CSS
+ * Layout principal: App container, Map, Topbar, Bottomsheet
+ * @version 5.5.0
+ * @package MBCDI
+ * 
+ * Les variables CSS sont dans frontend-core.css
+ * Les composants (cards, autocomplete) sont dans frontend-components.css
+ * Les media queries sont dans frontend-responsive.css
+ */
+
+/* === RESET === */
+.mbcdi-app,
+.mbcdi-app *,
+.mbcdi-app *::before,
+.mbcdi-app *::after {
+    box-sizing: border-box !important;
+}
+
+/* === CONTAINER - PLEINE PAGE === */
+.mbcdi-app {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    overflow: hidden !important;
+    background: #000 !important;
+    z-index: 9999 !important;
+}
+
+/* === CARTE PLEIN ÉCRAN === */
+.mbcdi-map {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 1 !important;
+    background: var(--mbcdi-gray-medium) !important;
+}
+
+.mbcdi-map .leaflet-container {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Cacher les contrôles Leaflet */
+.mbcdi-map .leaflet-control-zoom,
+.mbcdi-map .leaflet-control-attribution {
+    display: none !important;
+}
+
+.mbcdi-skeleton {
+    background: linear-gradient(90deg, #E5E5EA 25%, #D1D1D6 50%, #E5E5EA 75%) !important;
+    background-size: 200% 100% !important;
+    animation: mbcdi-skeleton 1.5s ease infinite !important;
+}
+
+@keyframes mbcdi-skeleton {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* === TOPBAR === */
+.mbcdi-topbar {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    padding: 12px !important;
+    padding-top: max(12px, env(safe-area-inset-top)) !important;
+}
+
+/* Barre compacte */
+.mbcdi-search-collapsed {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    background: #fff !important;
+    border-radius: var(--mbcdi-radius) !important;
+    box-shadow: var(--mbcdi-shadow) !important;
+    padding: 6px !important;
+}
+
+.mbcdi-app.expanded .mbcdi-search-collapsed {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    position: absolute !important;
+}
+
+.mbcdi-search-input-wrapper {
+    flex: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 0 12px !important;
+}
+
+.mbcdi-search-icon {
+    font-size: 16px !important;
+    color: var(--mbcdi-gray) !important;
+}
+
+.mbcdi-input-dest-main {
+    flex: 1 !important;
+    height: 44px !important;
+    border: none !important;
+    background: transparent !important;
+    font-size: 16px !important;
+    color: #1C1C1E !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    cursor: pointer !important;
+    padding-right: 20px !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%238E8E93' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0 center !important;
+}
+
+.mbcdi-input-dest-main:focus {
+    outline: none !important;
+}
+
+.mbcdi-btn-expand {
+    width: 44px !important;
+    height: 44px !important;
+    border: none !important;
+    background: var(--mbcdi-gray-light) !important;
+    border-radius: 10px !important;
+    font-size: 18px !important;
+    color: var(--mbcdi-gray-dark) !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Formulaire déplié */
+.mbcdi-search-expanded {
+    display: none !important;
+    background: #fff !important;
+    border-radius: var(--mbcdi-radius) !important;
+    box-shadow: var(--mbcdi-shadow) !important;
+    overflow: visible !important; /* V5.2.3: Permet à l'autocomplete de dépasser */
+    position: relative !important; /* V5.2.3: Nécessaire pour le positionnement absolu des enfants */
+}
+
+.mbcdi-app.expanded .mbcdi-search-expanded {
+    display: block !important;
+}
+
+.mbcdi-expanded-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 14px 16px !important;
+    border-bottom: 0.5px solid rgba(0,0,0,0.1) !important;
+}
+
+.mbcdi-expanded-title {
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    color: #1C1C1E !important;
+}
+
+.mbcdi-btn-collapse {
+    width: 32px !important;
+    height: 32px !important;
+    border: none !important;
+    background: var(--mbcdi-gray-light) !important;
+    border-radius: 50% !important;
+    font-size: 14px !important;
+    color: var(--mbcdi-gray-dark) !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.mbcdi-expanded-fields {
+    padding: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+}
+
+.mbcdi-field-group {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+}
+
+.mbcdi-field-group label {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: var(--mbcdi-gray-dark) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.mbcdi-input-start,
+.mbcdi-input-dest {
+    height: 48px !important;
+    padding: 0 36px 0 14px !important;
+    font-size: 16px !important;
+    color: #1C1C1E !important;
+    background: var(--mbcdi-gray-light) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    cursor: pointer !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%238E8E93' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 14px center !important;
+}
+
+.mbcdi-input-start:focus,
+.mbcdi-input-dest:focus {
+    outline: none !important;
+    background-color: var(--mbcdi-gray-medium) !important;
+}
+
+.mbcdi-mode-selector {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 12px 14px !important;
+    background: var(--mbcdi-gray-light) !important;
+    border-radius: 10px !important;
+}
+
+.mbcdi-current-mode {
+    font-size: 15px !important;
+    color: var(--mbcdi-gray-dark) !important;
+}
+
+.mbcdi-current-mode strong {
+    color: #1C1C1E !important;
+}
+
+.mbcdi-link-change-mode {
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    color: var(--mbcdi-blue) !important;
+    text-decoration: none !important;
+}
+
+.mbcdi-btn-search {
+    height: 50px !important;
+    background: var(--mbcdi-blue) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+}
+
+/* === BOTTOM SHEET === */
+.mbcdi-bottomsheet {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    background: #fff !important;
+    border-radius: 16px 16px 0 0 !important;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.15) !important;
+    transform: translateY(calc(100% - 80px)) !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    max-height: 70vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding-bottom: env(safe-area-inset-bottom) !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
+.mbcdi-bottomsheet.mbcdi-visible {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.mbcdi-bottomsheet.mbcdi-expanded {
+    transform: translateY(0) !important;
+}
+
+.mbcdi-bottomsheet-handle {
+    padding: 12px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    justify-content: center !important;
+}
+
+.mbcdi-handle-bar {
+    width: 36px !important;
+    height: 5px !important;
+    background: var(--mbcdi-gray-medium) !important;
+    border-radius: 3px !important;
+}
+
+.mbcdi-bottomsheet-header {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    padding: 0 16px 14px !important;
+    border-bottom: 0.5px solid rgba(0,0,0,0.1) !important;
+}
+
+.mbcdi-route-info {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+}
+
+.mbcdi-route-title {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #1C1C1E !important;
+}
+
+.mbcdi-route-updated {
+    font-size: 13px !important;
+    color: var(--mbcdi-gray) !important;
+}
+
+.mbcdi-route-summary {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-size: 17px !important;
+    font-weight: 600 !important;
+}
+
+.mbcdi-result-dist {
+    color: var(--mbcdi-blue) !important;
+}
+
+.mbcdi-result-sep {
+    color: var(--mbcdi-gray) !important;
+    font-weight: 400 !important;
+}
+
+.mbcdi-result-time {
+    color: #1C1C1E !important;
+}
+
+/* CACHER le lien Google Maps */
+.mbcdi-link-gmaps {
+    display: none !important;
+}
+
+/* Corps scrollable */
+.mbcdi-bottomsheet-body {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 16px;
+    max-height: calc(70vh - 100px) !important;
+}
+
+/* Source de l'itinéraire */
+.mbcdi-route-source {
+    padding: 8px 12px !important;
+    background: #E8F5E9 !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    color: #2E7D32 !important;
+    margin-bottom: 12px !important;
+}
+
+/* Liste des étapes */
+.mbcdi-steps-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+}
+
+.mbcdi-step-item {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 14px !important;
+    padding: 14px 0 !important;
+    border-bottom: 0.5px solid rgba(0,0,0,0.08) !important;
+}
+
+.mbcdi-step-item:last-child {
+    border-bottom: none !important;
+}
+
+.mbcdi-step-num {
+    width: 28px !important;
+    height: 28px !important;
+    background: var(--mbcdi-blue) !important;
+    color: #fff !important;
+    border-radius: 50% !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+}
+
+.mbcdi-step-content {
+    flex: 1 !important;
+}
+
+.mbcdi-step-text {
+    font-size: 15px !important;
+    color: #1C1C1E !important;
+    line-height: 1.4 !important;
+}
+
+.mbcdi-step-dist {
+    font-size: 13px !important;
+    color: var(--mbcdi-gray) !important;
+    margin-top: 4px !important;
+}
+
+/* === COMMERCES DANS LA MODAL === */
+.mbcdi-sheet-commerces {
+    margin-top: 20px !important;
+    padding-top: 16px !important;
+    border-top: 1px solid rgba(0,0,0,0.1) !important;
+}
+
+.mbcdi-sheet-commerces-title {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    color: var(--mbcdi-gray-dark) !important;
+    margin-bottom: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.mbcdi-sheet-commerce-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 12px 0 !important;
+    border-bottom: 0.5px solid rgba(0,0,0,0.08) !important;
+}
+
+.mbcdi-sheet-commerce-item:last-child {
+    border-bottom: none !important;
+}
+
+/* Logo commerce dans la modal = même style que sur carte */
+.mbcdi-sheet-commerce-logo {
+    width: 44px !important;
+    height: 44px !important;
+    background: #fff !important;
+    border: 2px solid var(--mbcdi-gray-medium) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+}
+
+.mbcdi-sheet-commerce-logo img {
+    width: 30px !important;
+    height: 30px !important;
+    object-fit: contain !important;
+}
+
+.mbcdi-sheet-commerce-logo span {
+    font-size: 20px !important;
+}
+
+.mbcdi-sheet-commerce-info {
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+.mbcdi-sheet-commerce-name {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    color: #1C1C1E !important;
+    margin-bottom: 2px !important;
+}
+
+.mbcdi-sheet-commerce-address {
+    font-size: 13px !important;
+    color: var(--mbcdi-gray-dark) !important;
+    margin-bottom: 4px !important;
+}
+
+.mbcdi-sheet-commerce-phone {
+    font-size: 13px !important;
+    color: var(--mbcdi-blue) !important;
+    text-decoration: none !important;
+}
+
+/* === MARQUEURS COMMERCES SUR CARTE === */
+.mbcdi-commerce-icon-wrapper {
+    background: transparent !important;
+    border: none !important;
+}
+
+.mbcdi-commerce-marker {
+    width: 44px !important;
+    height: 44px !important;
+    background: #fff !important;
+    border: 3px solid var(--mbcdi-blue) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+}
+
+.mbcdi-commerce-marker img {
+    width: 30px !important;
+    height: 30px !important;
+    object-fit: contain !important;
+}
+
+.mbcdi-commerce-marker span {
+    font-size: 20px !important;
+}
+
+/*
+ * Affichage de l'image de commerce dans un div.
+ * Le JS crée un élément <div class="mbcdi-commerce-marker-img"> avec une image en arrière‑plan.
+ * Sans ces règles, le logo ne s'affiche pas correctement (problème #3).
+ */
+.mbcdi-commerce-marker-img {
+    width: 100% !important;
+    height: 100% !important;
+    background-size: cover !important;
+    background-position: center center !important;
+}
+
+/* === POPUP LEAFLET === */
+.mbcdi-map .leaflet-popup-content-wrapper {
+    border-radius: var(--mbcdi-radius) !important;
+    box-shadow: var(--mbcdi-shadow) !important;
+    padding: 2px !important;
+}
+
+.mbcdi-map .leaflet-popup-content {
+    margin: 12px 14px !important;
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+}
+
+.mbcdi-map .leaflet-popup-close-button {
+    color: var(--mbcdi-gray) !important;
+}
+
+.mbcdi-popup-commerce strong {
+    font-size: 15px !important;
+    color: #1C1C1E !important;
+}
+
+.mbcdi-popup-commerce small {
+    color: var(--mbcdi-gray-dark) !important;
+}
+
+/* === LOADING === */
+.mbcdi-bottomsheet-body.mbcdi-loading {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 100px !important;
+}
+
+.mbcdi-bottomsheet-body.mbcdi-loading::after {
+    content: "" !important;
+    width: 24px !important;
+    height: 24px !important;
+    border: 3px solid var(--mbcdi-gray-light) !important;
+    border-top-color: var(--mbcdi-blue) !important;
+    border-radius: 50% !important;
+    animation: mbcdi-spin 0.8s linear infinite !important;
+}
+
+@keyframes mbcdi-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Media queries déplacées vers frontend-responsive.css */
+
+/* === LOGO UI (au-dessus de "Où allez-vous ?") === */
+.mbcdi-ui-logo {
+    background: #fff !important;
+    border-radius: var(--mbcdi-radius) !important;
+    box-shadow: var(--mbcdi-shadow) !important;
+    padding: 10px 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.mbcdi-ui-logo img {
+    max-width: 220px !important;
+    max-height: 64px !important;
+    width: auto !important;
+    height: auto !important;
+    display: block !important;
+}
+
+/* === CONTROLES CARTE (LOC + MODE) === */
+/* SUPPRIMÉ - Contrôles latéraux désactivés */
+.mbcdi-map-controls {
+    display: none !important;
+}
+
+/* === PANNEAU MODE TRANSPORT === */
+.mbcdi-mode-panel {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(0,0,0,0.45) !important;
+    z-index: 3000 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 20px !important;
+}
+
+.mbcdi-mode-panel-content {
+    background: #fff !important;
+    border-radius: 14px !important;
+    box-shadow: var(--mbcdi-shadow) !important;
+    width: min(420px, 100%) !important;
+    padding: 18px !important;
+}
+
+.mbcdi-mode-panel-content h4 {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    margin-bottom: 14px !important;
+    color: #1C1C1E !important;
+}
+
+.mbcdi-mode-options {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    margin-bottom: 12px !important;
+}
+
+.mbcdi-mode-link {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 14px 14px !important;
+    border: 1px solid rgba(0,0,0,0.12) !important;
+    border-radius: 12px !important;
+    text-decoration: none !important;
+    color: #1C1C1E !important;
+    font-weight: 600 !important;
+}
+
+.mbcdi-mode-link:hover {
+    border-color: var(--mbcdi-blue) !important;
+    background: #f7fbff !important;
+}
+
+.mbcdi-mode-arrow {
+    color: var(--mbcdi-blue) !important;
+}
+
+.mbcdi-btn-close-mode {
+    width: 100% !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 12px !important;
+    background: var(--mbcdi-gray-light) !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+}
+
+/* === MARKERS (points de départ / zones) === */
+.mbcdi-square-marker {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 3px !important;
+    background: #fff !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+}
+
+.mbcdi-square-marker {
+    box-sizing: border-box !important;
+    padding: 4px !important; /* marge interne pour éviter tout débordement */
+}
+
+.mbcdi-square-marker img {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    object-fit: contain !important;
+}
+
+
+.mbcdi-square-marker-emoji,
+.mbcdi-square-marker-default {
+    font-size: 18px !important;
+    line-height: 1 !important;
+}
+
+/* ==========================================
+   ERREURS INLINE V5.2.4
+   ========================================== */
+
+/* Champ en erreur - contour rouge */
+.mbcdi-field-error {
+    border-color: #dc3545 !important;
+    background-color: #fff5f5 !important;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1) !important;
+}
+
+.mbcdi-field-error:focus {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2) !important;
+}
+
+/* Message d'erreur sous le champ */
+.mbcdi-error-message {
+    display: block;
+    margin-top: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #dc3545;
+    background-color: #fff5f5;
+    border-left: 3px solid #dc3545;
+    border-radius: 4px;
+    animation: mbcdi-error-slide-in 0.3s ease-out;
+}
+
+@keyframes mbcdi-error-slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Media queries déplacées vers frontend-responsive.css */

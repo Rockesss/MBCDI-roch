@@ -1,0 +1,289 @@
+/**
+ * MBCDI Admin Itineraries - CSS
+ * @version 5.5.0
+ */
+
+/* === CONTENEUR PRINCIPAL === */
+#mbcdi-itineraries-container {
+    margin: 20px 0;
+}
+
+/* === ENCADRÉ D'AIDE === */
+.mbcdi-help-box {
+    background: #e7f5ff;
+    border-left: 4px solid #0073aa;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.mbcdi-help-box h4 {
+    margin: 0 0 10px 0;
+    color: #0073aa;
+}
+
+.mbcdi-help-box p {
+    margin: 5px 0;
+}
+
+/* === LISTE === */
+#mbcdi-itineraries-list {
+    margin-bottom: 20px;
+}
+
+#mbcdi-itineraries-list h4 {
+    margin-bottom: 15px;
+}
+
+.mbcdi-empty-message {
+    color: #666;
+    font-style: italic;
+    padding: 20px;
+    text-align: center;
+    background: #f9f9f9;
+    border-radius: 4px;
+}
+
+/* === CARTE ITINÉRAIRE === */
+.mbcdi-itinerary-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #fff;
+    transition: box-shadow 0.2s;
+}
+
+.mbcdi-itinerary-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.mbcdi-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.mbcdi-card-header h4 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.mbcdi-status {
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.mbcdi-status-active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.mbcdi-status-inactive {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.mbcdi-card-body p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.mbcdi-card-footer {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 8px;
+}
+
+/* === MODALS === */
+.mbcdi-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100000;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(0 0 0 / 43%);
+}
+
+.mbcdi-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.7);
+}
+
+.mbcdi-modal-content {
+    position: relative;
+    background: #fff;
+    border-radius: 8px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.mbcdi-modal-large {
+    max-width: 95%;
+    height: 90vh;
+    max-height: 90vh;
+}
+
+.mbcdi-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 2px solid #0073aa;
+}
+
+.mbcdi-modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.mbcdi-modal-close {
+    border: none;
+    background: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #999;
+    line-height: 1;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+}
+
+.mbcdi-modal-close:hover {
+    color: #333;
+}
+
+.mbcdi-modal-body {
+    padding: 20px;
+}
+
+.mbcdi-modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #ddd;
+    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* === TRACÉ === */
+.mbcdi-trace-container {
+    display: flex;
+    gap: 20px;
+    height: calc(90vh - 180px);
+}
+
+.mbcdi-trace-panel {
+    width: 300px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.mbcdi-panel-section {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.mbcdi-panel-section:last-child {
+    border-bottom: none;
+}
+
+.mbcdi-panel-section h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.mbcdi-panel-section p {
+    margin: 5px 0;
+    font-size: 13px;
+}
+
+.mbcdi-coords {
+    font-family: monospace;
+    font-size: 12px;
+    color: #666;
+}
+
+.mbcdi-trace-map-container {
+    flex: 1;
+    position: relative;
+}
+
+#mbcdi-trace-map {
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+}
+
+.mbcdi-map-help {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-size: 13px;
+    pointer-events: none;
+}
+
+/* === WAYPOINTS LIST === */
+#trace-waypoints-list {
+    margin: 10px 0;
+}
+
+.mbcdi-waypoint-item {
+    background: #f9f9f9;
+    padding: 8px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mbcdi-waypoint-item .mbcdi-coords {
+    font-size: 11px;
+}
+
+.mbcdi-waypoint-item button {
+    padding: 2px 8px;
+    font-size: 11px;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 1200px) {
+    .mbcdi-trace-container {
+        flex-direction: column;
+    }
+    
+    .mbcdi-trace-panel {
+        width: 100%;
+        max-height: 200px;
+    }
+    
+    .mbcdi-trace-map-container {
+        height: 400px;
+    }
+}

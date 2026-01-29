@@ -1,0 +1,1750 @@
+/**
+ * MBCDI Frontend Components CSS - CONSOLIDÉ
+ * Tous les composants UI en un seul fichier
+ * @version 5.5.0
+ * @package MBCDI
+ * 
+ * Ce fichier remplace les @import et fusionne :
+ * - frontend-commerce-cards-v2.css
+ * - searchbar.css
+ * - autocomplete.css
+ * - frontend-ui.css
+ * - smart-location.css
+ * - frontend-clustering.css
+ * 
+ * Les variables CSS sont héritées de frontend-core.css
+ * Les media queries sont dans frontend-responsive.css
+ */
+
+/* ============================================================================
+   COMMERCE CARDS
+   ============================================================================ */
+
+
+/* === VARIABLES === */
+
+/* === LISTE DES COMMERCES === */
+.mbcdi-commerce-list {
+    padding: 0 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* === CARTE COMMERCE === */
+.mbcdi-commerce-card {
+    background: var(--mbcdi-white);
+    border-radius: var(--mbcdi-radius-md);
+    padding: 16px;
+    box-shadow: var(--mbcdi-shadow-sm);
+    transition: var(--mbcdi-transition);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mbcdi-commerce-card:hover {
+    box-shadow: var(--mbcdi-shadow-md);
+    transform: translateY(-2px);
+}
+
+/* === HEADER DE LA CARTE === */
+.mbcdi-commerce-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+/* Logo */
+.mbcdi-commerce-logo-wrapper {
+    flex-shrink: 0;
+}
+
+.mbcdi-commerce-logo-large {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--mbcdi-radius-md);
+    object-fit: cover;
+    background: var(--mbcdi-gray-50);
+}
+
+/* Informations principales */
+.mbcdi-commerce-info-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.mbcdi-commerce-name-compact {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--mbcdi-gray-900);
+    margin: 0;
+    line-height: 1.3;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.mbcdi-commerce-address-compact {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--mbcdi-gray-600);
+    margin: 0;
+    line-height: 1.4;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.mbcdi-commerce-category {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--mbcdi-primary);
+    margin: 0;
+    line-height: 1.2;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+/* === ACTIONS DE LA CARTE === */
+.mbcdi-commerce-card-actions {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+/* Bouton Détails (Secondaire) */
+.mbcdi-btn-details {
+    flex: 1;
+    height: 44px;
+    background: #f6f6f6;
+    border: none;
+    border-radius: 8px;
+    color: var(--mbcdi-gray-900);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    cursor: pointer;
+    transition: var(--mbcdi-transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.mbcdi-btn-details:hover {
+    background: var(--mbcdi-gray-100);
+}
+
+.mbcdi-btn-details:active {
+    transform: scale(0.98);
+}
+
+/* Bouton Y aller (Primaire) */
+.mbcdi-btn-go-primary {
+    flex: 1.5;
+    height: 44px;
+    background: var(--mbcdi-primary);
+    border: none;
+    border-radius: 8px;
+    color: var(--mbcdi-white);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    cursor: pointer;
+    transition: var(--mbcdi-transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.mbcdi-btn-go-primary:hover {
+    background: var(--mbcdi-primary-dark);
+}
+
+.mbcdi-btn-go-primary:active {
+    transform: scale(0.98);
+}
+
+/* Icons SVG dans les boutons */
+.mbcdi-btn-icon {
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mbcdi-btn-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Icon détails (gris) */
+.mbcdi-btn-details .mbcdi-btn-icon svg {
+    fill: none;
+    stroke: #373738;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Icon Y aller (blanc) */
+.mbcdi-btn-go-primary .mbcdi-btn-icon svg {
+    fill: none;
+    stroke: var(--mbcdi-white);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.mbcdi-btn-text {
+    font-size: 15px;
+    line-height: 1;
+}
+
+/* === FICHE DÉTAILLÉE (PLEIN ÉCRAN) === */
+.mbcdi-commerce-detail-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--mbcdi-white);
+    z-index: 10001;
+    overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mbcdi-commerce-detail-fullscreen.active {
+    transform: translateY(0);
+}
+
+/* Header de la fiche */
+.mbcdi-detail-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: var(--mbcdi-white);
+    border-bottom: 0.5px solid var(--mbcdi-gray-300);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    z-index: 10;
+    gap: 12px;
+}
+
+.mbcdi-btn-back {
+    background: none;
+    border: none;
+    color: var(--mbcdi-primary);
+    font-size: 17px;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px;
+    margin-left: -8px;
+    transition: var(--mbcdi-transition);
+}
+
+.mbcdi-btn-back:hover {
+    opacity: 0.7;
+}
+
+.mbcdi-btn-back svg {
+    width: 20px;
+    height: 20px;
+    stroke: var(--mbcdi-primary);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+}
+
+.mbcdi-detail-commerce-name {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--mbcdi-gray-900);
+    margin: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+/* Contenu de la fiche */
+.mbcdi-detail-content {
+    padding: 24px 16px 100px;
+}
+
+/* Logo centré grand */
+.mbcdi-detail-logo-wrapper {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.mbcdi-detail-logo-large {
+    width: 120px;
+    height: 120px;
+    border-radius: var(--mbcdi-radius-lg);
+    object-fit: cover;
+    box-shadow: var(--mbcdi-shadow-md);
+    background: var(--mbcdi-gray-50);
+}
+
+/* Titre et adresse */
+.mbcdi-detail-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--mbcdi-gray-900);
+    margin: 0 0 8px 0;
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+.mbcdi-detail-address {
+    font-size: 15px;
+    color: var(--mbcdi-gray-600);
+    margin: 0 0 24px 0;
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+/* Bloc d'informations */
+.mbcdi-detail-info-block {
+    background: var(--mbcdi-gray-50);
+    border-radius: var(--mbcdi-radius-md);
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.mbcdi-detail-info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 15px;
+    line-height: 1.5;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+.mbcdi-detail-info-row:last-child {
+    margin-bottom: 0;
+}
+
+.mbcdi-detail-info-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: var(--mbcdi-gray-600);
+}
+
+.mbcdi-detail-info-text {
+    flex: 1;
+    color: var(--mbcdi-gray-900);
+}
+
+.mbcdi-detail-info-text a {
+    color: var(--mbcdi-primary);
+    text-decoration: none;
+}
+
+.mbcdi-detail-info-text a:hover {
+    text-decoration: underline;
+}
+
+/* Description */
+.mbcdi-detail-description {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--mbcdi-gray-900);
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+/* Bouton Y aller fixe en bas */
+.mbcdi-detail-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--mbcdi-white);
+    padding: 16px;
+    border-top: 0.5px solid var(--mbcdi-gray-300);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.mbcdi-btn-go-detail {
+    width: 100%;
+    height: 50px;
+    background: var(--mbcdi-primary);
+    border: none;
+    border-radius: var(--mbcdi-radius-md);
+    color: var(--mbcdi-white);
+    font-size: 17px;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    cursor: pointer;
+    transition: var(--mbcdi-transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.mbcdi-btn-go-detail:hover {
+    background: var(--mbcdi-primary-dark);
+}
+
+.mbcdi-btn-go-detail:active {
+    transform: scale(0.98);
+}
+
+.mbcdi-btn-go-detail .mbcdi-btn-icon svg {
+    fill: none;
+    stroke: var(--mbcdi-white);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* === ÉTAT VIDE === */
+.mbcdi-commerce-list-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--mbcdi-gray-600);
+}
+
+.mbcdi-commerce-list-empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.mbcdi-commerce-list-empty-text {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--mbcdi-gray-900);
+    margin: 0 0 8px 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+.mbcdi-commerce-list-empty-subtext {
+    font-size: 14px;
+    color: var(--mbcdi-gray-600);
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+/* === RESPONSIVE === */
+
+/* Mobile Portrait (très petit) */
+
+/* Mobile Paysage */
+
+/* Tablet */
+
+/* Desktop */
+
+/* === ACCESSIBILITÉ === */
+.mbcdi-btn-details:focus-visible,
+.mbcdi-btn-go-primary:focus-visible,
+.mbcdi-btn-back:focus-visible,
+.mbcdi-btn-go-detail:focus-visible {
+    outline: 3px solid rgba(0, 122, 255, 0.5);
+    outline-offset: 2px;
+}
+
+/* Préférence mouvement réduit */
+
+/* Mode sombre (optionnel) */
+
+/* ============================================================================
+   SEARCHBAR & AUTOCOMPLETE
+   ============================================================================ */
+
+
+/* ========================================
+   BARRE DE RECHERCHE SIMPLIFIÉE
+   ======================================== */
+
+.mbcdi-searchbar {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    z-index: 1002;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Wrapper input avec icônes */
+.mbcdi-search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transition: box-shadow 0.2s ease;
+}
+
+.mbcdi-search-input-wrapper:focus-within {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+}
+
+/* Icône recherche (gauche) */
+.mbcdi-search-icon {
+    position: absolute;
+    left: 14px;
+    font-size: 18px;
+    color: var(--mbcdi-grey-6);
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Input principal */
+.mbcdi-search-input {
+    flex: 1;
+    height: 48px;
+    padding: 0 48px 0 44px; /* Espace pour icônes gauche/droite */
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    color: var(--mbcdi-grey-1);
+    outline: none;
+    border-radius: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+.mbcdi-search-input::placeholder {
+    color: var(--mbcdi-grey-6);
+}
+
+/* Bouton effacer (droite) */
+.mbcdi-search-clear {
+    position: absolute;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    background: var(--mbcdi-grey-10);
+    border: none;
+    border-radius: 50%;
+    font-size: 14px;
+    color: var(--mbcdi-grey-6);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    z-index: 2;
+}
+
+.mbcdi-search-clear:hover {
+    background: #D1D1D6;
+}
+
+.mbcdi-search-clear:active {
+    transform: scale(0.9);
+}
+
+.mbcdi-search-clear:focus {
+    outline: 2px solid var(--mbcdi-primary);
+    outline-offset: 2px;
+}
+
+
+/* ========================================
+   RÉSULTATS AUTOCOMPLÉTION
+   ======================================== */
+
+.mbcdi-autocomplete-results {
+    position: absolute;
+    top: 56px; /* 48px input + 8px gap */
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    max-height: 320px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: none;
+    z-index: 10;
+}
+
+.mbcdi-autocomplete-results.mbcdi-has-results {
+    display: block;
+    animation: mbcdi-fade-slide-in 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes mbcdi-fade-slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scroll personnalisé iOS-style */
+.mbcdi-autocomplete-results::-webkit-scrollbar {
+    width: 8px;
+}
+
+.mbcdi-autocomplete-results::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mbcdi-autocomplete-results::-webkit-scrollbar-thumb {
+    background: #D1D1D6;
+    border-radius: 4px;
+}
+
+.mbcdi-autocomplete-results::-webkit-scrollbar-thumb:hover {
+    background: #C7C7CC;
+}
+
+
+/* ========================================
+   ITEMS AUTOCOMPLÉTION
+   ======================================== */
+
+.mbcdi-autocomplete-item {
+    padding: 12px 16px;
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background 0.15s ease;
+    background: white;
+}
+
+.mbcdi-autocomplete-item:last-child {
+    border-bottom: none;
+}
+
+.mbcdi-autocomplete-item:hover,
+.mbcdi-autocomplete-item.mbcdi-highlighted {
+    background: var(--mbcdi-grey-11);
+}
+
+.mbcdi-autocomplete-item:active {
+    background: var(--mbcdi-grey-10);
+}
+
+/* Nom du commerce */
+.mbcdi-autocomplete-item-name {
+    display: block;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--mbcdi-grey-1);
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+/* Adresse */
+.mbcdi-autocomplete-item-address {
+    display: block;
+    font-size: 14px;
+    color: var(--mbcdi-grey-6);
+    line-height: 1.4;
+}
+
+/* Highlight du texte recherché */
+.mbcdi-autocomplete-highlight {
+    background: #FFE58F;
+    font-weight: 600;
+    border-radius: 2px;
+    padding: 0 2px;
+    color: var(--mbcdi-grey-1);
+}
+
+
+/* ========================================
+   MESSAGE PAS DE RÉSULTATS
+   ======================================== */
+
+.mbcdi-autocomplete-empty {
+    padding: 20px;
+    text-align: center;
+    color: var(--mbcdi-grey-6);
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+
+/* ========================================
+   RESPONSIVE MOBILE
+   ======================================== */
+
+
+
+/* ========================================
+   ACCESSIBILITÉ
+   ======================================== */
+
+/* Focus visible pour navigation clavier */
+.mbcdi-search-input:focus {
+    outline: none; /* Le wrapper gère le focus */
+}
+
+.mbcdi-search-input-wrapper:focus-within {
+    outline: 3px solid rgba(0, 122, 255, 0.5);
+    outline-offset: 2px;
+}
+
+.mbcdi-autocomplete-item:focus {
+    background: var(--mbcdi-grey-11);
+    outline: 2px solid var(--mbcdi-primary);
+    outline-offset: -2px;
+}
+
+/* Attributs ARIA pour lecteurs d'écran */
+.mbcdi-autocomplete-item[role="option"] {
+    cursor: pointer;
+}
+
+
+/* ========================================
+   MODE SOMBRE
+   ======================================== */
+
+
+
+/* ========================================
+   ANIMATIONS RÉDUITES
+   ======================================== */
+
+
+
+/* ========================================
+   COMPATIBILITÉ ANCIENS NAVIGATEURS
+   ======================================== */
+
+/* Fallback pour navigateurs sans support :focus-within */
+@supports not selector(:focus-within) {
+    .mbcdi-search-input:focus {
+        outline: 3px solid rgba(0, 122, 255, 0.5);
+        outline-offset: 2px;
+    }
+}
+
+
+/* ========================================
+   RÉSUMÉ ITINÉRAIRE SIMPLIFIÉ V5.0
+   ======================================== */
+
+.mbcdi-route-summary-v5 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 20px;
+    background: var(--mbcdi-grey-11);
+    border-radius: 12px;
+    margin: 16px 0;
+}
+
+.mbcdi-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mbcdi-summary-icon {
+    font-size: 20px;
+}
+
+.mbcdi-summary-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--mbcdi-grey-1);
+}
+
+.mbcdi-summary-separator {
+    font-size: 16px;
+    color: var(--mbcdi-grey-6);
+}
+
+.mbcdi-route-message {
+    text-align: center;
+    padding: 16px;
+    color: var(--mbcdi-grey-6);
+    font-size: 15px;
+}
+
+.mbcdi-route-message p {
+    margin: 0;
+}
+
+/* Mobile */
+/* Résumé itinéraire simplifié v5.0 */
+.mbcdi-route-summary-v5 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 20px;
+    background: var(--mbcdi-grey-11);
+    border-radius: 12px;
+    margin: 16px 0;
+}
+
+.mbcdi-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mbcdi-summary-icon {
+    font-size: 20px;
+}
+
+.mbcdi-summary-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--mbcdi-grey-1);
+}
+
+.mbcdi-summary-separator {
+    font-size: 16px;
+    color: var(--mbcdi-grey-6);
+}
+
+.mbcdi-route-message {
+    text-align: center;
+    padding: 16px;
+    color: var(--mbcdi-grey-6);
+    font-size: 15px;
+}
+
+/**
+ * MBCDI Autocomplete Styles V4.9.8
+ * Style iOS avec espaces et design épuré
+ * Variables héritées de frontend-core.css
+ */
+
+/* Wrapper de l'autocomplétion */
+.mbcdi-autocomplete-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* Input d'autocomplétion - Style iOS */
+.mbcdi-autocomplete-input {
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    color: var(--mbcdi-grey-1);
+    background: var(--mbcdi-gray-light);
+    transition: background-color 0.2s ease;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.mbcdi-autocomplete-input:focus {
+    outline: none;
+    background-color: var(--mbcdi-gray-medium);
+}
+
+.mbcdi-autocomplete-input::placeholder {
+    color: var(--mbcdi-gray);
+}
+
+/* Conteneur des résultats - Style iOS */
+.mbcdi-autocomplete-results {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: var(--mbcdi-radius);
+    box-shadow: var(--mbcdi-shadow);
+    max-height: 320px;
+    overflow-y: auto;
+    z-index: 99999; /* V5.2.3: Augmenté pour garantir affichage par-dessus tout */
+    display: none;
+}
+
+.mbcdi-autocomplete-results.active {
+    display: block;
+}
+
+/* Item de résultat - Style iOS avec séparateurs */
+.mbcdi-autocomplete-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+    min-height: 56px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.mbcdi-autocomplete-item:last-child {
+    border-bottom: none;
+}
+
+.mbcdi-autocomplete-item:hover,
+.mbcdi-autocomplete-item.active {
+    background-color: var(--mbcdi-gray-light);
+}
+
+/* Premier et dernier item - Coins arrondis iOS */
+.mbcdi-autocomplete-item:first-child {
+    border-top-left-radius: var(--mbcdi-radius);
+    border-top-right-radius: var(--mbcdi-radius);
+}
+
+.mbcdi-autocomplete-item:last-child {
+    border-bottom-left-radius: var(--mbcdi-radius);
+    border-bottom-right-radius: var(--mbcdi-radius);
+}
+
+/* Nom du commerce - Style iOS */
+.mbcdi-autocomplete-name {
+    font-weight: 500;
+    color: var(--mbcdi-grey-1);
+    font-size: 16px;
+    line-height: 20px;
+    margin-bottom: 2px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+/* Adresse du commerce - Style iOS secondaire */
+.mbcdi-autocomplete-address {
+    font-size: 14px;
+    color: var(--mbcdi-gray);
+    line-height: 18px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+/* Scrollbar iOS-style */
+.mbcdi-autocomplete-results::-webkit-scrollbar {
+    width: 6px;
+}
+
+.mbcdi-autocomplete-results::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mbcdi-autocomplete-results::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.mbcdi-autocomplete-results::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive mobile - Ajustements iOS */
+
+/* Message "Aucun résultat" - Style iOS */
+.mbcdi-autocomplete-no-results {
+    padding: 20px 16px;
+    text-align: center;
+    color: var(--mbcdi-gray);
+    font-size: 15px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+/* Animation d'apparition iOS */
+.mbcdi-autocomplete-results.active {
+    animation: mbcdi-fade-in 0.2s ease;
+}
+
+@keyframes mbcdi-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* État désactivé - Style iOS */
+.mbcdi-autocomplete-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Focus sur mobile - Pas de zoom iOS */
+
+/* ============================================================================
+   UI COMPONENTS (Modals, Bottom Sheets)
+   ============================================================================ */
+
+/**
+ * MBCDI Frontend UI - Interface utilisateur
+ * Modale de localisation et liste des commerces
+ * Style iOS moderne
+ * @package MBCDI
+ */
+
+/* === MODALE DE LOCALISATION === */
+.mbcdi-location-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.mbcdi-location-modal.hidden {
+    display: none;
+}
+
+.mbcdi-location-modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.mbcdi-location-modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--mbcdi-grey-1);
+    margin: 0 0 12px 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+.mbcdi-location-modal-text {
+    font-size: 15px;
+    color: #636366;
+    line-height: 1.5;
+    margin: 0 0 24px 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+.mbcdi-location-modal-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mbcdi-btn-location-allow,
+.mbcdi-btn-location-deny {
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+.mbcdi-btn-location-allow {
+    background: var(--mbcdi-primary);
+    color: white;
+}
+
+.mbcdi-btn-location-allow:hover {
+    background: #0056CC;
+}
+
+.mbcdi-btn-location-deny {
+    background: var(--mbcdi-grey-11);
+    color: var(--mbcdi-grey-1);
+}
+
+.mbcdi-btn-location-deny:hover {
+    background: var(--mbcdi-grey-10);
+}
+
+/* === LISTE DES COMMERCES === */
+.mbcdi-commerce-list-view,
+.mbcdi-commerce-detail-view {
+    width: 100%;
+}
+
+.mbcdi-section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--mbcdi-grey-1);
+    margin: 0;
+    padding: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+.mbcdi-commerce-list {
+    padding: 0 16px 16px;
+}
+
+.mbcdi-commerce-item {
+    background: white;
+    border: none; /* supporte aussi le cas où l'élément est un <button> */
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+
+/* Focus clavier visible sur les éléments cliquables */
+.mbcdi-commerce-item:focus,
+.mbcdi-commerce-item:focus-visible {
+    outline: 3px solid rgba(0, 122, 255, 0.6);
+    outline-offset: 2px;
+}
+
+.mbcdi-commerce-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.mbcdi-commerce-item-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.mbcdi-commerce-item-logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: var(--mbcdi-grey-11);
+}
+
+.mbcdi-commerce-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.mbcdi-commerce-item-name {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--mbcdi-grey-1);
+    margin: 0 0 4px 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+.mbcdi-commerce-item-address {
+    font-size: 14px;
+    color: var(--mbcdi-grey-6);
+    margin: 0;
+    line-height: 1.4;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+.mbcdi-commerce-item-distance {
+    font-size: 13px;
+    color: var(--mbcdi-primary);
+    margin: 4px 0 0 0;
+    font-weight: 500;
+}
+
+.mbcdi-commerce-item-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.mbcdi-btn-see-commerce,
+.mbcdi-btn-go {
+    flex: 1;
+    height: 44px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+.mbcdi-btn-see-commerce {
+    background: var(--mbcdi-grey-11);
+    color: var(--mbcdi-grey-1);
+}
+
+.mbcdi-btn-see-commerce:hover {
+    background: var(--mbcdi-grey-10);
+}
+
+.mbcdi-btn-go {
+    background: var(--mbcdi-primary);
+    color: white;
+    flex: 0 0 80px;
+}
+
+.mbcdi-btn-go:hover {
+    background: #0056CC;
+}
+
+/* Détails commerce dans la liste (dépliés) */
+.mbcdi-commerce-item-details {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 0.5px solid rgba(0, 0, 0, 0.1);
+    display: none;
+}
+
+.mbcdi-commerce-item-details.visible {
+    display: block;
+}
+
+.mbcdi-commerce-item-detail-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.mbcdi-commerce-item-detail-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.mbcdi-commerce-item-detail-text {
+    color: var(--mbcdi-grey-1);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+.mbcdi-commerce-item-detail-text a {
+    color: var(--mbcdi-primary);
+    text-decoration: none;
+}
+
+.mbcdi-commerce-item-detail-text a:hover {
+    text-decoration: underline;
+}
+
+/* === FICHE ÉTABLISSEMENT === */
+.mbcdi-btn-back {
+    background: var(--mbcdi-grey-11);
+    border: none;
+    border-radius: 10px;
+    padding: 8px 16px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--mbcdi-primary);
+    cursor: pointer;
+    margin-bottom: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    transition: all 0.2s ease;
+}
+
+.mbcdi-btn-back:hover {
+    background: var(--mbcdi-grey-10);
+}
+
+.mbcdi-commerce-name {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--mbcdi-grey-1);
+    margin: 0 0 8px 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+.mbcdi-commerce-details {
+    padding: 16px;
+}
+
+.mbcdi-commerce-address {
+    font-size: 15px;
+    color: var(--mbcdi-grey-6);
+    margin-bottom: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+.mbcdi-commerce-logo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.mbcdi-commerce-logo img {
+    max-width: 120px;
+    max-height: 120px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mbcdi-commerce-info {
+    background: var(--mbcdi-grey-11);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.mbcdi-commerce-phone,
+.mbcdi-commerce-website,
+.mbcdi-commerce-hours,
+.mbcdi-commerce-description {
+    margin-bottom: 12px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--mbcdi-grey-1);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+.mbcdi-commerce-phone:last-child,
+.mbcdi-commerce-website:last-child,
+.mbcdi-commerce-hours:last-child,
+.mbcdi-commerce-description:last-child {
+    margin-bottom: 0;
+}
+
+.mbcdi-commerce-phone a,
+.mbcdi-commerce-website a {
+    color: var(--mbcdi-primary);
+    text-decoration: none;
+}
+
+.mbcdi-commerce-phone a:hover,
+.mbcdi-commerce-website a:hover {
+    text-decoration: underline;
+}
+
+.mbcdi-btn-toggle-steps {
+    width: 100%;
+    height: 50px;
+    background: var(--mbcdi-primary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    transition: all 0.2s ease;
+}
+
+.mbcdi-btn-toggle-steps:hover {
+    background: #0056CC;
+}
+
+.mbcdi-steps-container {
+    margin-top: 16px;
+}
+
+.mbcdi-route-summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--mbcdi-grey-11);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--mbcdi-grey-1);
+}
+
+.mbcdi-result-sep {
+    color: var(--mbcdi-grey-6);
+}
+
+/* === RESPONSIVE MOBILE === */
+
+/* ============================================================================
+   SMART LOCATION
+   ============================================================================ */
+
+/**
+ * MBCDI v5.0.0 - Smart Location CSS
+ * Styles pour géolocalisation intelligente
+ * 
+ * Composants :
+ * - Bouton toggle position
+ * - Menu déroulant points QR
+ * - Notifications discrètes iOS-style
+ * - Animation pulse point de départ
+ * 
+ * @package MBCDI
+ * @version 5.5.0
+ */
+
+/* ========================================
+   BOUTON POSITION TOGGLE
+   ======================================== */
+
+.mbcdi-btn-position-toggle {
+    position: absolute;
+    top: 72px; /* 16px + 48px barre recherche + 8px gap */
+    left: 16px;
+    width: 44px;
+    height: 44px;
+    background: white;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1001;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.mbcdi-btn-position-toggle:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.mbcdi-btn-position-toggle:active {
+    transform: scale(0.95);
+}
+
+.mbcdi-btn-position-toggle:focus {
+    outline: 3px solid rgba(0, 122, 255, 0.5);
+    outline-offset: 2px;
+}
+
+/* Mobile : bouton en bas à droite pour ne pas gêner */
+
+
+/* ========================================
+   MENU DÉROULANT POINTS QR
+   ======================================== */
+
+.mbcdi-position-menu {
+    position: absolute;
+    top: 124px; /* 72px + 44px bouton + 8px gap */
+    left: 16px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    min-width: 240px;
+    max-width: 320px;
+    z-index: 1003;
+    overflow: hidden;
+    animation: mbcdi-menu-slide-in 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes mbcdi-menu-slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mbcdi-position-menu-header {
+    padding: 12px 16px;
+    background: var(--mbcdi-grey-11);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--mbcdi-grey-6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+}
+
+.mbcdi-position-menu-item {
+    width: 100%;
+    padding: 14px 16px;
+    background: white;
+    border: none;
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+    text-align: left;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--mbcdi-grey-1);
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.mbcdi-position-menu-item:last-child {
+    border-bottom: none;
+}
+
+.mbcdi-position-menu-item:hover {
+    background: var(--mbcdi-grey-11);
+}
+
+.mbcdi-position-menu-item:active {
+    background: var(--mbcdi-grey-10);
+}
+
+.mbcdi-position-menu-item:focus {
+    background: var(--mbcdi-grey-11);
+    outline: none;
+}
+
+/* Mobile : menu pleine largeur centré */
+
+
+/* ========================================
+   NOTIFICATIONS DISCRÈTES
+   ======================================== */
+
+.mbcdi-notification {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    padding: 12px 20px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--mbcdi-grey-1);
+    z-index: 10000;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    max-width: 90%;
+    text-align: center;
+}
+
+.mbcdi-notification-visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Types de notifications */
+.mbcdi-notification-success {
+    background: #34C759;
+    color: white;
+}
+
+.mbcdi-notification-info {
+    background: var(--mbcdi-primary);
+    color: white;
+}
+
+.mbcdi-notification-error {
+    background: #FF3B30;
+    color: white;
+}
+
+.mbcdi-notification-warning {
+    background: #FF9500;
+    color: white;
+}
+
+/* Mobile : notification plus haute */
+
+
+/* ========================================
+   MARQUEUR POINT DE DÉPART AVEC PULSE
+   ======================================== */
+
+.mbcdi-start-marker {
+    position: relative;
+    width: 60px;
+    height: 60px;
+}
+
+.mbcdi-marker-pulse-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* Anneaux de pulse (3 superposés pour effet continu) */
+.mbcdi-pulse-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    border: 3px solid var(--mbcdi-primary);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: mbcdi-pulse-expand 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    pointer-events: none;
+    opacity: 0;
+}
+
+/* Icône centrale du marqueur */
+.mbcdi-marker-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: 3px solid var(--mbcdi-primary);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    z-index: 2;
+}
+
+/* Animation pulse expansive */
+@keyframes mbcdi-pulse-expand {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.8);
+        opacity: 0;
+    }
+}
+
+/* Variante pour position utilisateur GPS (si affichée séparément) */
+.mbcdi-user-marker .mbcdi-pulse-ring {
+    border-color: #34C759;
+}
+
+.mbcdi-user-marker .mbcdi-marker-icon {
+    border-color: #34C759;
+    background: white;
+    box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
+}
+
+/* Marqueur sans pulse (après arrêt) */
+.mbcdi-marker-static .mbcdi-pulse-ring {
+    animation: none;
+    opacity: 0;
+}
+
+
+/* ========================================
+   ACCESSIBILITÉ
+   ======================================== */
+
+/* Focus visible pour navigation clavier */
+.mbcdi-btn-position-toggle:focus-visible,
+.mbcdi-position-menu-item:focus-visible {
+    outline: 3px solid var(--mbcdi-primary);
+    outline-offset: 2px;
+}
+
+/* Mode réduit animations (respect préférences utilisateur) */
+
+
+/* ========================================
+   MODE SOMBRE (optionnel)
+   ======================================== */
+
+
+/* ============================================================================
+   CLUSTERING
+   ============================================================================ */
+
+/**
+ * MBCDI Frontend - Clustering V4.9.1
+ * Styles pour Leaflet.markercluster - CORRIGÉ
+ * @version 5.5.0
+ */
+
+/* === CLUSTERS LEAFLET === */
+.marker-cluster {
+    background-color: rgba(0, 115, 170, 0.6);
+    border-radius: 50%;
+    text-align: center;
+}
+
+.marker-cluster div {
+    background-color: rgba(0, 115, 170, 0.85);
+    border: 3px solid rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.marker-cluster span {
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1;
+}
+
+/* Tailles de clusters */
+.marker-cluster-small div {
+    width: 40px;
+    height: 40px;
+}
+
+.marker-cluster-medium div {
+    width: 50px;
+    height: 50px;
+}
+
+.marker-cluster-medium span {
+    font-size: 16px;
+}
+
+.marker-cluster-large div {
+    width: 60px;
+    height: 60px;
+}
+
+.marker-cluster-large span {
+    font-size: 18px;
+}
+
+/* Effet hover sur clusters */
+.marker-cluster:hover div {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+
+/* IMPORTANT: Désactiver les animations de Leaflet qui causent le mouvement */
+.leaflet-cluster-anim .leaflet-marker-icon,
+.leaflet-cluster-anim .leaflet-marker-shadow {
+    transition: none !important;
+}
+
+/* Polylines spider */
+.leaflet-cluster-spider-leg {
+    stroke: var(--mbcdi-primary);
+    stroke-width: 2px;
+    stroke-opacity: 0.5;
+}

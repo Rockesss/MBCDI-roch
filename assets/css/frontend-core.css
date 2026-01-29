@@ -1,0 +1,455 @@
+/**
+ * MBCDI Frontend Core CSS
+ * Variables CSS, Reset et Classes Utilitaires
+ * @version 5.5.0
+ * @package MBCDI
+ */
+
+/* ============================================================================
+   VARIABLES CSS - DESIGN SYSTEM
+   ============================================================================ */
+
+:root {
+    /* === COULEURS PRIMAIRES (iOS Style) === */
+    --mbcdi-primary: #007AFF;
+    --mbcdi-primary-dark: #0056CC;
+    --mbcdi-primary-light: #5AC8FA;
+    --mbcdi-primary-alpha-10: rgba(0, 122, 255, 0.1);
+    --mbcdi-primary-alpha-20: rgba(0, 122, 255, 0.2);
+
+    /* === COULEURS WORDPRESS (Legacy/Admin) === */
+    --mbcdi-wp-blue: #0073aa;
+    --mbcdi-wp-blue-dark: #2271b1;
+    --mbcdi-wp-green: #46b450;
+
+    /* === COULEURS STATUS === */
+    --mbcdi-success: #34C759;
+    --mbcdi-error: #FF3B30;
+    --mbcdi-warning: #FF9500;
+    --mbcdi-info: #5AC8FA;
+
+    /* === PALETTE GRIS (iOS) === */
+    --mbcdi-grey-1: #1C1C1E;    /* Presque noir */
+    --mbcdi-grey-2: #2C2C2E;    /* Gris très foncé */
+    --mbcdi-grey-3: #3A3A3C;    /* Gris foncé */
+    --mbcdi-grey-4: #48484A;    /* Gris moyen-foncé */
+    --mbcdi-grey-5: #636366;    /* Gris moyen */
+    --mbcdi-grey-6: #8E8E93;    /* Gris clair */
+    --mbcdi-grey-7: #AEAEB2;    /* Gris très clair */
+    --mbcdi-grey-8: #C7C7CC;    /* Gris pale */
+    --mbcdi-grey-9: #D1D1D6;    /* Gris ultra pale */
+    --mbcdi-grey-10: #E5E5EA;   /* Gris separator */
+    --mbcdi-grey-11: #F2F2F7;   /* Gris background */
+
+    /* === COULEURS BASIQUES === */
+    --mbcdi-white: #FFFFFF;
+    --mbcdi-black: #000000;
+
+    /* === BACKGROUNDS === */
+    --mbcdi-bg-primary: var(--mbcdi-white);
+    --mbcdi-bg-secondary: var(--mbcdi-grey-11);
+    --mbcdi-bg-tertiary: var(--mbcdi-white);
+    --mbcdi-bg-dark: var(--mbcdi-grey-1);
+
+    /* === OVERLAYS === */
+    --mbcdi-overlay-light: rgba(0, 0, 0, 0.05);
+    --mbcdi-overlay-medium: rgba(0, 0, 0, 0.1);
+    --mbcdi-overlay-strong: rgba(0, 0, 0, 0.2);
+    --mbcdi-overlay-dark: rgba(0, 0, 0, 0.5);
+    --mbcdi-overlay-heavy: rgba(0, 0, 0, 0.7);
+
+    /* === BORDERS === */
+    --mbcdi-border-color: var(--mbcdi-grey-10);
+    --mbcdi-border-color-dark: var(--mbcdi-grey-8);
+    --mbcdi-border-width: 1px;
+    --mbcdi-border-radius-sm: 6px;
+    --mbcdi-border-radius-md: 8px;
+    --mbcdi-border-radius-lg: 12px;
+    --mbcdi-border-radius-xl: 16px;
+    --mbcdi-border-radius-full: 9999px;
+
+    /* === SPACING === */
+    --mbcdi-space-xs: 4px;
+    --mbcdi-space-sm: 8px;
+    --mbcdi-space-md: 16px;
+    --mbcdi-space-lg: 24px;
+    --mbcdi-space-xl: 32px;
+    --mbcdi-space-2xl: 48px;
+    --mbcdi-space-3xl: 64px;
+
+    /* === TYPOGRAPHY === */
+    --mbcdi-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mbcdi-font-family-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+
+    --mbcdi-font-size-xs: 12px;
+    --mbcdi-font-size-sm: 13px;
+    --mbcdi-font-size-base: 15px;
+    --mbcdi-font-size-md: 16px;
+    --mbcdi-font-size-lg: 18px;
+    --mbcdi-font-size-xl: 20px;
+    --mbcdi-font-size-2xl: 24px;
+    --mbcdi-font-size-3xl: 28px;
+    --mbcdi-font-size-4xl: 34px;
+
+    --mbcdi-font-weight-normal: 400;
+    --mbcdi-font-weight-medium: 500;
+    --mbcdi-font-weight-semibold: 600;
+    --mbcdi-font-weight-bold: 700;
+
+    --mbcdi-line-height-tight: 1.2;
+    --mbcdi-line-height-normal: 1.5;
+    --mbcdi-line-height-relaxed: 1.75;
+
+    /* === SHADOWS === */
+    --mbcdi-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --mbcdi-shadow-md: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+    --mbcdi-shadow-lg: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
+    --mbcdi-shadow-xl: 0 8px 24px 0 rgba(0, 0, 0, 0.2);
+    --mbcdi-shadow-2xl: 0 16px 48px 0 rgba(0, 0, 0, 0.25);
+
+    /* === TRANSITIONS === */
+    --mbcdi-transition-fast: 150ms ease;
+    --mbcdi-transition-base: 200ms ease;
+    --mbcdi-transition-slow: 300ms ease;
+    --mbcdi-transition-slower: 500ms ease;
+
+    /* === Z-INDEX === */
+    --mbcdi-z-dropdown: 1000;
+    --mbcdi-z-sticky: 1020;
+    --mbcdi-z-fixed: 1030;
+    --mbcdi-z-modal-backdrop: 1040;
+    --mbcdi-z-modal: 1050;
+    --mbcdi-z-popover: 1060;
+    --mbcdi-z-tooltip: 1070;
+    
+    /* === LEGACY ALIASES (v4.x compatibility) === */
+    --mbcdi-blue: var(--mbcdi-primary);
+    --mbcdi-blue-dark: var(--mbcdi-primary-dark);
+    --mbcdi-gray: var(--mbcdi-grey-6);
+    --mbcdi-gray-light: var(--mbcdi-grey-11);
+    --mbcdi-gray-medium: var(--mbcdi-grey-10);
+    --mbcdi-gray-dark: var(--mbcdi-grey-5);
+    --mbcdi-green: var(--mbcdi-success);
+    --mbcdi-radius: var(--mbcdi-border-radius-lg);
+    --mbcdi-radius-lg: 20px;
+    --mbcdi-shadow: var(--mbcdi-shadow-lg);
+    --mbcdi-radius-md: var(--mbcdi-border-radius-md);
+    --mbcdi-transition: var(--mbcdi-transition-base);
+}
+
+/* ============================================================================
+   RESET CSS & BASE STYLES
+   ============================================================================ */
+
+/* Box sizing */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* Reset margins/paddings */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+/* Body defaults */
+body {
+    font-family: var(--mbcdi-font-family);
+    font-size: var(--mbcdi-font-size-base);
+    line-height: var(--mbcdi-line-height-normal);
+    color: var(--mbcdi-grey-1);
+    background-color: var(--mbcdi-bg-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: var(--mbcdi-font-weight-semibold);
+    line-height: var(--mbcdi-line-height-tight);
+    color: var(--mbcdi-grey-1);
+}
+
+/* Links */
+a {
+    color: var(--mbcdi-primary);
+    text-decoration: none;
+    transition: color var(--mbcdi-transition-fast);
+}
+
+a:hover {
+    color: var(--mbcdi-primary-dark);
+}
+
+/* Buttons reset */
+button {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+/* Images */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Lists */
+ul, ol {
+    list-style: none;
+}
+
+/* Inputs */
+input, textarea, select {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+/* ============================================================================
+   CLASSES UTILITAIRES
+   ============================================================================ */
+
+/* === DISPLAY === */
+.mbcdi-hidden { display: none !important; }
+.mbcdi-block { display: block !important; }
+.mbcdi-inline { display: inline !important; }
+.mbcdi-inline-block { display: inline-block !important; }
+.mbcdi-flex { display: flex !important; }
+.mbcdi-inline-flex { display: inline-flex !important; }
+.mbcdi-grid { display: grid !important; }
+
+/* === FLEX === */
+.mbcdi-flex-row { flex-direction: row; }
+.mbcdi-flex-col { flex-direction: column; }
+.mbcdi-flex-wrap { flex-wrap: wrap; }
+.mbcdi-flex-nowrap { flex-wrap: nowrap; }
+
+.mbcdi-items-start { align-items: flex-start; }
+.mbcdi-items-center { align-items: center; }
+.mbcdi-items-end { align-items: flex-end; }
+.mbcdi-items-stretch { align-items: stretch; }
+
+.mbcdi-justify-start { justify-content: flex-start; }
+.mbcdi-justify-center { justify-content: center; }
+.mbcdi-justify-end { justify-content: flex-end; }
+.mbcdi-justify-between { justify-content: space-between; }
+.mbcdi-justify-around { justify-content: space-around; }
+
+.mbcdi-flex-1 { flex: 1 1 0%; }
+.mbcdi-flex-auto { flex: 1 1 auto; }
+.mbcdi-flex-none { flex: none; }
+
+/* === SPACING === */
+.mbcdi-gap-xs { gap: var(--mbcdi-space-xs); }
+.mbcdi-gap-sm { gap: var(--mbcdi-space-sm); }
+.mbcdi-gap-md { gap: var(--mbcdi-space-md); }
+.mbcdi-gap-lg { gap: var(--mbcdi-space-lg); }
+.mbcdi-gap-xl { gap: var(--mbcdi-space-xl); }
+
+.mbcdi-m-0 { margin: 0 !important; }
+.mbcdi-mt-0 { margin-top: 0 !important; }
+.mbcdi-mr-0 { margin-right: 0 !important; }
+.mbcdi-mb-0 { margin-bottom: 0 !important; }
+.mbcdi-ml-0 { margin-left: 0 !important; }
+
+.mbcdi-m-sm { margin: var(--mbcdi-space-sm); }
+.mbcdi-m-md { margin: var(--mbcdi-space-md); }
+.mbcdi-m-lg { margin: var(--mbcdi-space-lg); }
+
+.mbcdi-p-0 { padding: 0 !important; }
+.mbcdi-p-sm { padding: var(--mbcdi-space-sm); }
+.mbcdi-p-md { padding: var(--mbcdi-space-md); }
+.mbcdi-p-lg { padding: var(--mbcdi-space-lg); }
+
+/* === TEXT === */
+.mbcdi-text-left { text-align: left; }
+.mbcdi-text-center { text-align: center; }
+.mbcdi-text-right { text-align: right; }
+
+.mbcdi-text-xs { font-size: var(--mbcdi-font-size-xs); }
+.mbcdi-text-sm { font-size: var(--mbcdi-font-size-sm); }
+.mbcdi-text-base { font-size: var(--mbcdi-font-size-base); }
+.mbcdi-text-lg { font-size: var(--mbcdi-font-size-lg); }
+.mbcdi-text-xl { font-size: var(--mbcdi-font-size-xl); }
+
+.mbcdi-font-normal { font-weight: var(--mbcdi-font-weight-normal); }
+.mbcdi-font-medium { font-weight: var(--mbcdi-font-weight-medium); }
+.mbcdi-font-semibold { font-weight: var(--mbcdi-font-weight-semibold); }
+.mbcdi-font-bold { font-weight: var(--mbcdi-font-weight-bold); }
+
+.mbcdi-text-grey-1 { color: var(--mbcdi-grey-1); }
+.mbcdi-text-grey-5 { color: var(--mbcdi-grey-5); }
+.mbcdi-text-grey-6 { color: var(--mbcdi-grey-6); }
+.mbcdi-text-primary { color: var(--mbcdi-primary); }
+.mbcdi-text-error { color: var(--mbcdi-error); }
+.mbcdi-text-success { color: var(--mbcdi-success); }
+
+/* === BACKGROUNDS === */
+.mbcdi-bg-white { background-color: var(--mbcdi-white); }
+.mbcdi-bg-grey-11 { background-color: var(--mbcdi-grey-11); }
+.mbcdi-bg-primary { background-color: var(--mbcdi-primary); }
+.mbcdi-bg-error { background-color: var(--mbcdi-error); }
+.mbcdi-bg-success { background-color: var(--mbcdi-success); }
+
+/* === BORDERS === */
+.mbcdi-border { border: var(--mbcdi-border-width) solid var(--mbcdi-border-color); }
+.mbcdi-border-t { border-top: var(--mbcdi-border-width) solid var(--mbcdi-border-color); }
+.mbcdi-border-r { border-right: var(--mbcdi-border-width) solid var(--mbcdi-border-color); }
+.mbcdi-border-b { border-bottom: var(--mbcdi-border-width) solid var(--mbcdi-border-color); }
+.mbcdi-border-l { border-left: var(--mbcdi-border-width) solid var(--mbcdi-border-color); }
+
+.mbcdi-rounded-none { border-radius: 0; }
+.mbcdi-rounded-sm { border-radius: var(--mbcdi-border-radius-sm); }
+.mbcdi-rounded-md { border-radius: var(--mbcdi-border-radius-md); }
+.mbcdi-rounded-lg { border-radius: var(--mbcdi-border-radius-lg); }
+.mbcdi-rounded-xl { border-radius: var(--mbcdi-border-radius-xl); }
+.mbcdi-rounded-full { border-radius: var(--mbcdi-border-radius-full); }
+
+/* === SHADOWS === */
+.mbcdi-shadow-none { box-shadow: none; }
+.mbcdi-shadow-sm { box-shadow: var(--mbcdi-shadow-sm); }
+.mbcdi-shadow-md { box-shadow: var(--mbcdi-shadow-md); }
+.mbcdi-shadow-lg { box-shadow: var(--mbcdi-shadow-lg); }
+.mbcdi-shadow-xl { box-shadow: var(--mbcdi-shadow-xl); }
+
+/* === OVERFLOW === */
+.mbcdi-overflow-auto { overflow: auto; }
+.mbcdi-overflow-hidden { overflow: hidden; }
+.mbcdi-overflow-visible { overflow: visible; }
+.mbcdi-overflow-scroll { overflow: scroll; }
+
+/* === POSITION === */
+.mbcdi-relative { position: relative; }
+.mbcdi-absolute { position: absolute; }
+.mbcdi-fixed { position: fixed; }
+.mbcdi-sticky { position: sticky; }
+
+/* === WIDTH / HEIGHT === */
+.mbcdi-w-full { width: 100%; }
+.mbcdi-h-full { height: 100%; }
+.mbcdi-w-auto { width: auto; }
+.mbcdi-h-auto { height: auto; }
+
+/* === CURSOR === */
+.mbcdi-cursor-pointer { cursor: pointer; }
+.mbcdi-cursor-default { cursor: default; }
+.mbcdi-cursor-not-allowed { cursor: not-allowed; }
+
+/* === TRANSITIONS === */
+.mbcdi-transition { transition: all var(--mbcdi-transition-base); }
+.mbcdi-transition-fast { transition: all var(--mbcdi-transition-fast); }
+.mbcdi-transition-slow { transition: all var(--mbcdi-transition-slow); }
+
+/* === OPACITY === */
+.mbcdi-opacity-0 { opacity: 0; }
+.mbcdi-opacity-50 { opacity: 0.5; }
+.mbcdi-opacity-75 { opacity: 0.75; }
+.mbcdi-opacity-100 { opacity: 1; }
+
+/* ============================================================================
+   CLASSES COMPOSANTS DE BASE
+   ============================================================================ */
+
+/* Container */
+.mbcdi-container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--mbcdi-space-md);
+    padding-right: var(--mbcdi-space-md);
+}
+
+/* Card */
+.mbcdi-card {
+    background-color: var(--mbcdi-bg-primary);
+    border: var(--mbcdi-border-width) solid var(--mbcdi-border-color);
+    border-radius: var(--mbcdi-border-radius-md);
+    padding: var(--mbcdi-space-md);
+    box-shadow: var(--mbcdi-shadow-sm);
+    transition: box-shadow var(--mbcdi-transition-base);
+}
+
+.mbcdi-card:hover {
+    box-shadow: var(--mbcdi-shadow-md);
+}
+
+/* Button base */
+.mbcdi-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--mbcdi-space-xs);
+    padding: var(--mbcdi-space-sm) var(--mbcdi-space-md);
+    font-size: var(--mbcdi-font-size-base);
+    font-weight: var(--mbcdi-font-weight-medium);
+    line-height: var(--mbcdi-line-height-tight);
+    border-radius: var(--mbcdi-border-radius-md);
+    cursor: pointer;
+    transition: all var(--mbcdi-transition-fast);
+    text-align: center;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.mbcdi-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Badge */
+.mbcdi-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    font-size: var(--mbcdi-font-size-xs);
+    font-weight: var(--mbcdi-font-weight-medium);
+    line-height: 1;
+    border-radius: var(--mbcdi-border-radius-full);
+    white-space: nowrap;
+}
+
+/* Divider */
+.mbcdi-divider {
+    height: var(--mbcdi-border-width);
+    background-color: var(--mbcdi-border-color);
+    border: none;
+    margin: var(--mbcdi-space-md) 0;
+}
+
+/* ============================================================================
+   ACCESSIBILITÉ
+   ============================================================================ */
+
+/* Screen reader only */
+.mbcdi-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Focus visible */
+.mbcdi-focus-visible:focus-visible {
+    outline: 2px solid var(--mbcdi-primary);
+    outline-offset: 2px;
+}
+
+/* ============================================================================
+   PRINT STYLES
+   ============================================================================ */
+
+@media print {
+    .mbcdi-no-print {
+        display: none !important;
+    }
+}

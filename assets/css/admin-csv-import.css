@@ -1,0 +1,470 @@
+/**
+ * MBCDI Admin - Import CSV V4.9.0
+ * Interface d'import de commerces depuis fichier CSV
+ * @version 5.5.0
+ */
+
+/* === CONTENEUR PRINCIPAL === */
+.mbcdi-csv-import-page {
+    max-width: 1400px;
+    margin: 20px auto;
+}
+
+.mbcdi-csv-import-page h1 {
+    margin-bottom: 30px;
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.mbcdi-import-container {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+/* === SIDEBAR === */
+.mbcdi-import-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: sticky;
+    top: 32px;
+}
+
+.mbcdi-help-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.mbcdi-help-card h3 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.mbcdi-help-card ol,
+.mbcdi-help-card ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.mbcdi-help-card li {
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.mbcdi-help-card strong {
+    color: #2271b1;
+    font-weight: 600;
+}
+
+/* === ZONE PRINCIPALE === */
+.mbcdi-import-main {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* === ÉTAPES === */
+.mbcdi-import-step {
+    display: none;
+    padding: 30px;
+}
+
+.mbcdi-import-step.mbcdi-step-active {
+    display: block;
+}
+
+.mbcdi-step-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f1;
+}
+
+.mbcdi-step-number {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(34,113,177,0.3);
+}
+
+.mbcdi-step-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.mbcdi-step-content {
+    max-width: 800px;
+}
+
+.mbcdi-step-content > p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #50575e;
+    margin-bottom: 20px;
+}
+
+/* === BOUTONS === */
+.button.button-hero {
+    height: auto;
+    padding: 15px 30px;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.button.button-hero .dashicons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+.mbcdi-next-step {
+    margin-top: 30px;
+}
+
+/* === PREVIEW DU TEMPLATE === */
+.mbcdi-template-preview {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f6f7f7;
+    border-radius: 6px;
+    border-left: 4px solid #2271b1;
+}
+
+.mbcdi-template-preview h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.mbcdi-template-preview pre {
+    margin: 0;
+    padding: 15px;
+    background: #1d2327;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.mbcdi-template-preview code {
+    color: #00d084;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* === ZONE DE DROP === */
+.mbcdi-upload-zone {
+    border: 3px dashed #c3c4c7;
+    border-radius: 8px;
+    padding: 60px 40px;
+    text-align: center;
+    background: #f6f7f7;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.mbcdi-upload-zone:hover {
+    border-color: #2271b1;
+    background: #f0f6fc;
+}
+
+.mbcdi-upload-zone.mbcdi-dragover {
+    border-color: #00a32a;
+    background: #e7f5ec;
+    transform: scale(1.02);
+}
+
+.mbcdi-upload-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.mbcdi-upload-zone h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.mbcdi-upload-zone p {
+    margin: 10px 0;
+    color: #50575e;
+}
+
+/* === FICHIER SÉLECTIONNÉ === */
+.mbcdi-file-selected {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: #f0f6fc;
+    border: 1px solid #2271b1;
+    border-radius: 6px;
+    margin-top: 20px;
+}
+
+.mbcdi-file-selected .dashicons {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    color: #2271b1;
+}
+
+#mbcdi-filename {
+    flex: 1;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+#mbcdi-filesize {
+    color: #50575e;
+    font-size: 14px;
+}
+
+/* === OPTIONS D'IMPORT === */
+.mbcdi-import-options {
+    margin-top: 30px;
+    padding: 25px;
+    background: #f6f7f7;
+    border-radius: 8px;
+}
+
+.mbcdi-import-options h4 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.mbcdi-import-options label {
+    display: block;
+    padding: 12px 0;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.mbcdi-import-options input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+/* === PREVIEW TABLE === */
+.mbcdi-import-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.mbcdi-stat-card {
+    padding: 20px;
+    background: linear-gradient(135deg, #f6f7f7 0%, #fff 100%);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.mbcdi-stat-number {
+    font-size: 36px;
+    font-weight: 700;
+    color: #2271b1;
+    margin-bottom: 5px;
+}
+
+.mbcdi-stat-label {
+    font-size: 14px;
+    color: #50575e;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mbcdi-stat-card.mbcdi-error .mbcdi-stat-number {
+    color: #d63638;
+}
+
+.mbcdi-stat-card.mbcdi-success .mbcdi-stat-number {
+    color: #00a32a;
+}
+
+#mbcdi-preview-table {
+    margin-top: 20px;
+}
+
+#mbcdi-preview-table th {
+    font-weight: 600;
+    background: #f6f7f7;
+}
+
+#mbcdi-preview-table .mbcdi-status-ok {
+    color: #00a32a;
+    font-weight: 600;
+}
+
+#mbcdi-preview-table .mbcdi-status-error {
+    color: #d63638;
+    font-weight: 600;
+}
+
+#mbcdi-preview-table .mbcdi-status-warning {
+    color: #dba617;
+    font-weight: 600;
+}
+
+/* === ERREURS === */
+.mbcdi-errors-list {
+    padding: 20px;
+    background: #fcf0f1;
+    border-left: 4px solid #d63638;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.mbcdi-errors-list h4 {
+    margin: 0 0 10px 0;
+    color: #d63638;
+    font-size: 16px;
+}
+
+.mbcdi-errors-list ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.mbcdi-errors-list li {
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+/* === ACTIONS === */
+.mbcdi-import-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid #f0f0f1;
+}
+
+/* === PROGRESS BAR === */
+.mbcdi-progress-container {
+    margin: 40px 0;
+}
+
+.mbcdi-progress-bar {
+    width: 100%;
+    height: 30px;
+    background: #f0f0f1;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.mbcdi-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2271b1 0%, #135e96 100%);
+    width: 0%;
+    transition: width 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 15px;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.mbcdi-progress-text {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+/* === RÉSULTAT === */
+#mbcdi-import-result {
+    padding: 30px;
+    border-radius: 8px;
+    margin-top: 30px;
+}
+
+#mbcdi-import-result.mbcdi-result-success {
+    background: #e7f5ec;
+    border: 2px solid #00a32a;
+}
+
+#mbcdi-import-result.mbcdi-result-partial {
+    background: #fcf9e8;
+    border: 2px solid #dba617;
+}
+
+#mbcdi-import-result.mbcdi-result-error {
+    background: #fcf0f1;
+    border: 2px solid #d63638;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 1200px) {
+    .mbcdi-import-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .mbcdi-import-sidebar {
+        position: static;
+        order: 2;
+    }
+    
+    .mbcdi-import-main {
+        order: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .mbcdi-csv-import-page h1 {
+        font-size: 24px;
+    }
+    
+    .mbcdi-import-step {
+        padding: 20px;
+    }
+    
+    .mbcdi-step-header h2 {
+        font-size: 20px;
+    }
+    
+    .mbcdi-upload-zone {
+        padding: 40px 20px;
+    }
+    
+    .mbcdi-import-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .mbcdi-import-actions {
+        flex-direction: column;
+    }
+    
+    .mbcdi-import-actions .button {
+        width: 100%;
+    }
+}

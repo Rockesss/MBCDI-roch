@@ -1,0 +1,6 @@
+nom,adresse,latitude,longitude,telephone,site_web,description,type,horaires,logo_url,zone_livraison_id
+"Boulangerie Martin","12 rue Victor Hugo, 75001 Paris",48.8566,2.3522,"01 23 45 67 89","https://boulangerie-martin.fr","Pain artisanal et viennoiseries fraîches tous les jours","Boulangerie","Lundi-Samedi 7h-20h, Dimanche 8h-13h","",""
+"Pharmacie Centrale","45 boulevard Leclerc, 75002 Paris",48.8570,2.3525,"01 98 76 54 32","","Pharmacie de garde disponible 24h/24, 7j/7","Pharmacie","24h/24","",""
+"Café du Commerce","8 place de la Mairie, 75003 Paris",48.8600,2.3550,"01 45 67 89 12","https://cafe-commerce.fr","Restaurant traditionnel français avec terrasse","Restaurant","11h-23h tous les jours","",""
+"Épicerie Bio Nature","23 rue des Jardins, 75004 Paris",48.8580,2.3540,"01 34 56 78 90","","Produits bio locaux et de saison","Épicerie","9h-19h30 du lundi au samedi","",""
+"Pressing Express","67 avenue Foch, 75005 Paris",48.8590,2.3560,"01 55 66 77 88","","Nettoyage à sec et repassage rapide","Pressing","8h-19h en semaine, 9h-17h samedi","",""
