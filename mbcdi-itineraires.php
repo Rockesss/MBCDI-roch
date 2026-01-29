@@ -36,7 +36,8 @@ require_once MBCDI_PLUGIN_DIR . 'includes/class-mbcdi-cpt.php';
 require_once MBCDI_PLUGIN_DIR . 'includes/class-mbcdi-cpt-itineraries.php';
 require_once MBCDI_PLUGIN_DIR . 'includes/class-mbcdi-frontend.php';
 require_once MBCDI_PLUGIN_DIR . 'includes/class-mbcdi-csv-importer.php';
-require_once MBCDI_PLUGIN_DIR . 'includes/class-mbcdi-bottomsheet.php';
+// Ancien système bottom sheet désactivé - remplacé par v5.5.0
+// require_once MBCDI_PLUGIN_DIR . 'includes/class-mbcdi-bottomsheet.php';
 
 final class MBCDI_Plugin {
 
