@@ -927,6 +927,14 @@
                 });
             }
 
+            function revealStartOptions() {
+                if (!selectStart) return;
+                var options = selectStart.querySelectorAll('option');
+                options.forEach(function(opt) {
+                    opt.style.display = '';
+                });
+            }
+
             if (selectStart) {
                 selectStart.addEventListener('focus', revealStartOptions);
                 selectStart.addEventListener('mousedown', revealStartOptions);
@@ -1205,6 +1213,45 @@
                 });
             }
 
+            function showUserStartMarker(position) {
+                if (!state.map || !position) return;
+
+                if (state.userMarker) {
+                    try { state.map.removeLayer(state.userMarker); } catch (e) {}
+                    state.userMarker = null;
+                }
+
+                var html = ''
+                    + '<div class="mbcdi-start-marker mbcdi-user-marker-red">'
+                    +   '<div class="mbcdi-marker-pulse-container">'
+                    +     '<span class="mbcdi-pulse-ring" style="animation-delay:0s"></span>'
+                    +     '<span class="mbcdi-pulse-ring" style="animation-delay:0.33s"></span>'
+                    +     '<span class="mbcdi-pulse-ring" style="animation-delay:0.66s"></span>'
+                    +     '<span class="mbcdi-marker-icon">●</span>'
+                    +   '</div>'
+                    + '</div>';
+
+                var pulseIcon = L.divIcon({
+                    html: html,
+                    className: '',
+                    iconSize: [60, 60],
+                    iconAnchor: [30, 30]
+                });
+
+                state.userMarker = L.marker([position.lat, position.lng], {
+                    icon: pulseIcon,
+                    interactive: false
+                }).addTo(state.map);
+
+                setTimeout(function() {
+                    if (!state.userMarker) return;
+                    var el = state.userMarker.getElement && state.userMarker.getElement();
+                    if (el) {
+                        el.classList.add('mbcdi-marker-static');
+                    }
+                }, 15000);
+            }
+
             function renderDeliveryZonesOnMap() {
                 if (!data.deliveryZones || !data.deliveryZones.length) return;
                 data.deliveryZones.forEach(function(z) {
@@ -1304,6 +1351,7 @@
 
                 state.startPosition = { lat: startLat, lng: startLng };
                 state.selectedCommerce = commerce;
+                showUserStartMarker(state.startPosition);
 
                 var zone = null;
                 if (data.deliveryZones && data.deliveryZones.length) {
@@ -1471,6 +1519,8 @@
 
                 showCommerceCard(commerce, false);
 
+                showCommerceCard(commerce, false);
+
                 var startLat = startVal === 'geoloc'
                     ? (state.userPosition ? state.userPosition.lat : null)
                     : (startVal ? parseFloat(startVal.split(',')[0]) : (state.userPosition ? state.userPosition.lat : null));
@@ -1487,6 +1537,7 @@
 
                 state.startPosition = { lat: startLat, lng: startLng };
                 state.selectedCommerce = commerce;
+                showUserStartMarker(state.startPosition);
 
                 var zone = null;
                 if (data.deliveryZones && data.deliveryZones.length) {
