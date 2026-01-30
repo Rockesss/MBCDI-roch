@@ -438,3 +438,79 @@
         max-height: 80vh !important;
     }
 }
+
+/* ========================================
+   TITRE ET ANIMATION TRAJET EN COURS v5.5.8
+   ======================================== */
+
+/* Titre "Trajet en cours" au même niveau que "Commerces à proximité" */
+.mbcdi-bs-route-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 16px 12px 16px;
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #000;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+/* Conteneur icône animée */
+.mbcdi-bs-route-icon-animated {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+/* Icône de navigation avec animation pulse + rotation */
+.mbcdi-bs-navigation-pulse {
+    width: 24px;
+    height: 24px;
+    color: #007AFF;
+    animation: mbcdi-navigation-pulse 2s ease-in-out infinite;
+}
+
+/* Animation pulse + rotation pour l'icône de navigation */
+@keyframes mbcdi-navigation-pulse {
+    0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    25% {
+        transform: scale(1.1) rotate(90deg);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1) rotate(180deg);
+        opacity: 1;
+    }
+    75% {
+        transform: scale(1.1) rotate(270deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1) rotate(360deg);
+        opacity: 1;
+    }
+}
+
+/* Sur mobile, réduire légèrement la taille */
+@media (max-width: 768px) {
+    .mbcdi-bs-route-title {
+        font-size: 20px;
+        padding: 14px 14px 10px 14px;
+    }
+    
+    .mbcdi-bs-route-icon-animated {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .mbcdi-bs-navigation-pulse {
+        width: 22px;
+        height: 22px;
+    }
+}

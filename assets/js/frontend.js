@@ -1658,6 +1658,17 @@
                     state.walkingLineLayer = null;
                 }
 
+                // Supprimer le marker utilisateur avec pulse (v5.5.8)
+                if (state.userMarker) {
+                    try {
+                        state.map.removeLayer(state.userMarker);
+                        state.userMarker = null;
+                        mbcdiDebug('[MBCDI v5.5.8] Marker utilisateur supprimé');
+                    } catch (e) {
+                        console.warn('[MBCDI v5.5.8] Erreur suppression marker utilisateur:', e);
+                    }
+                }
+
                 // Réinitialiser la rotation de la carte (v5.5.0)
                 if (typeof state.map.setBearing === 'function' && window.MBCDI_Modular && window.MBCDI_Modular.modules && window.MBCDI_Modular.modules.rotation) {
                     try {
@@ -1843,14 +1854,51 @@
                             state.map.fitBounds(state.routeLayer.getBounds(), { padding: [80, 120] });
                         }
 
-                        // Masquer le cluster des commerces pendant l'affichage de l'itinéraire (v5.5.6)
-                        if (state.commerceClusterGroup && state.map.hasLayer(state.commerceClusterGroup)) {
-                            try {
-                                state.map.removeLayer(state.commerceClusterGroup);
-                                mbcdiDebug('[MBCDI v5.5.6] Cluster commerces masqué pendant itinéraire');
-                            } catch (e) {
-                                console.warn('[MBCDI v5.5.6] Erreur masquage cluster:', e);
+                        // Masquer le cluster des commerces pendant l'affichage de l'itinéraire (v5.5.8)
+                        if (state.commerceClusterGroup) {
+                            // Masquer tous les markers du cluster
+                            state.commerceClusterGroup.eachLayer(function(layer) {
+                                layer.setOpacity(0);
+                            });
+                            // Et retirer le cluster de la carte pour éviter les clics
+                            if (state.map.hasLayer(state.commerceClusterGroup)) {
+                                try {
+                                    state.map.removeLayer(state.commerceClusterGroup);
+                                    mbcdiDebug('[MBCDI v5.5.8] Cluster commerces masqué pendant itinéraire');
+                                } catch (e) {
+                                    console.warn('[MBCDI v5.5.8] Erreur masquage cluster:', e);
+                                }
                             }
+                        }
+
+                        // Créer marker de position utilisateur avec pulse si géolocalisation (v5.5.8)
+                        if (!route.start_point_id && state.startPosition && state.startPosition.lat && state.startPosition.lng) {
+                            mbcdiDebug('[MBCDI v5.5.8] Création marker utilisateur avec pulse');
+
+                            // Supprimer l'ancien marker utilisateur s'il existe
+                            if (state.userMarker) {
+                                try {
+                                    state.map.removeLayer(state.userMarker);
+                                } catch (e) {}
+                            }
+
+                            // Créer icône avec pulse (utilise styles existants)
+                            var pulseIcon = L.divIcon({
+                                html: '<div class="mbcdi-marker-pulse-container">' +
+                                      '<div class="mbcdi-pulse-ring"></div>' +
+                                      '<div class="mbcdi-marker-icon">📍</div>' +
+                                      '</div>',
+                                className: 'mbcdi-user-marker',
+                                iconSize: [60, 60],
+                                iconAnchor: [30, 30]
+                            });
+
+                            state.userMarker = L.marker([state.startPosition.lat, state.startPosition.lng], {
+                                icon: pulseIcon,
+                                zIndexOffset: 10000
+                            }).addTo(state.map);
+
+                            mbcdiDebug('[MBCDI v5.5.8] Marker utilisateur avec pulse ajouté');
                         }
 
                         // Masquer les points de départ et zones de livraison non utilisés
