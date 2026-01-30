@@ -1,7 +1,7 @@
 /**
- * MBCDI Bottom Sheet v5.5.0
+ * MBCDI Bottom Sheet v5.5.1
  * Système de bottom sheet avec 4 états selon maquette
- * @version 5.5.0
+ * @version 5.5.1
  */
 
 (function() {

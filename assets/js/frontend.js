@@ -4,7 +4,7 @@
  * - Affichage distance à pied depuis zone
  * - Respect strict de l'ordre des étapes du BO
  * - Clustering commerces + fiche commerce rétractable
- * @version 5.5.0
+ * @version 5.5.1
  */
 (function() {
     'use strict';
@@ -334,6 +334,21 @@
                     maxZoom: 19
                 }).addTo(state.map);
 
+                // Initialiser le contrôle de rotation (v5.5.2)
+                if (typeof state.map.setBearing === 'function' && window.MBCDI_Modular && window.MBCDI_Modular.modules && window.MBCDI_Modular.modules.rotation) {
+                    try {
+                        state.rotationControl = window.MBCDI_Modular.modules.rotation.createRotationControl(state.map, {
+                            position: 'topright',
+                            onRotate: function(bearing) {
+                                mbcdiDebug('[MBCDI] Rotation manuelle:', bearing, '°');
+                            }
+                        });
+                        mbcdiDebug('[MBCDI v5.5.2] Contrôle de rotation ajouté');
+                    } catch (rotErr) {
+                        console.warn('[MBCDI v5.5.2] Erreur création contrôle rotation:', rotErr);
+                    }
+                }
+
                 state.map.on('zoomend', function() {
                     updatePictoSizes();
                 });
@@ -473,6 +488,12 @@
                         mbcdiDebug('] Focus sur champ point de départ');
                     }
                 }, 300); // Petit délai pour l'animation de déploiement
+            });
+
+            // === ÉCOUTE DE L'ÉVÉNEMENT "RESET ROUTE" (v5.5.0) ===
+            window.addEventListener('mbcdi:resetRoute', function() {
+                mbcdiDebug('[MBCDI v5.5.0] Événement resetRoute reçu');
+                resetRoute();
             });
 
             // === MODALE DE LOCALISATION ET LISTE DES COMMERCES V4.9.81 ===
@@ -865,16 +886,19 @@
                     state.isExpanded = false;
                 });
             }
-
-            // Note: La synchronisation entre les inputs est maintenant gérée par l'autocomplétion
-
-            if (selectStart) {
-                selectStart.addEventListener('change', function() {
-                    if (this.value === 'geoloc') {
-                        geolocateUser();
-                    }
+            function revealStartOptions() {
+                if (!selectStart) return;
+                var options = selectStart.querySelectorAll('option');
+                options.forEach(function(opt) {
+                    opt.style.display = '';
                 });
             }
+
+            if (selectStart) {
+                selectStart.addEventListener('focus', revealStartOptions);
+                selectStart.addEventListener('mousedown', revealStartOptions);
+            }
+            // Note: La synchronisation entre les inputs est maintenant gérée par l'autocomplétion
 
             function revealStartOptions() {
                 if (!selectStart) return;
@@ -1136,7 +1160,7 @@
                 html +=       '<h4 class="mbcdi-route-section-title">🗺️ Itinéraire</h4>';
                 html +=       '<div class="mbcdi-route-loading">Calcul en cours...</div>';
                 html +=       '<div class="mbcdi-route-content" style="display:none;"></div>';
-                html +=       '<button type="button" class="mbcdi-btn-back mbcdi-btn-back-to-list">← Choisir un autre commerce</button>';
+                html +=       '<button type="button" class="mbcdi-btn-back mbcdi-btn-back-to-list">← Retour à la carte</button>';
                 html +=     '</div>';
 
                 html +=   '</div>';
@@ -1184,21 +1208,8 @@
             }
 
             function resetCommerceSelection() {
-                state.selectedCommerceId = null;
-                state.selectedCommerce = null;
-                state.selectedZone = null;
-                state.destPosition = null;
-
-                if (state.routeLayer) {
-                    try { state.map.removeLayer(state.routeLayer); } catch (e) {}
-                    state.routeLayer = null;
-                }
-                if (state.walkingLineLayer) {
-                    try { state.map.removeLayer(state.walkingLineLayer); } catch (e) {}
-                    state.walkingLineLayer = null;
-                }
-
-                hideBottomSheet();
+                // Utiliser la nouvelle fonction resetRoute qui fait tout
+                resetRoute();
             }
 
             function renderStepsHTML(route) {
@@ -1305,6 +1316,8 @@
                     var icon = createSquareIcon(sp.iconUrl, '🚪');
                     var m = L.marker([sp.lat, sp.lng], { icon: icon }).addTo(state.map);
                     if (sp.label) m.bindPopup('<strong>' + escapeHtml(sp.label) + '</strong>');
+                    // Stocker l'ID du point de départ dans le marqueur
+                    m.mbcdiStartPointId = sp.id;
                     state.startPointMarkers.push(m);
                 });
             }
@@ -1316,12 +1329,16 @@
                     if (z.geometry && z.geometry.length >= 3) {
                         var latlngs = z.geometry.map(function(p) { return [p.lat, p.lng]; });
                         var poly = L.polygon(latlngs, { color: color, fillColor: color, fillOpacity: 0.18, weight: 2 }).addTo(state.map);
+                        // Stocker l'ID de la zone sur le polygone
+                        poly.mbcdiDeliveryZoneId = z.id;
                         state.deliveryZonePolygons.push(poly);
                     }
                     if (z.lat && z.lng) {
                         var icon = createSquareIcon(z.iconUrl, '🅿️');
                         var mz = L.marker([z.lat, z.lng], { icon: icon }).addTo(state.map);
                         mz.bindPopup('<strong>' + escapeHtml(z.name || 'Zone de livraison') + '</strong>');
+                        // Stocker l'ID de la zone sur le marqueur
+                        mz.mbcdiDeliveryZoneId = z.id;
                         state.deliveryZoneMarkers.push(mz);
                     }
                 });
@@ -1567,6 +1584,7 @@
                     showFieldError(selectDest, 'Ce commerce n\'a pas d\'itinéraire configuré');
                     return;
                 }
+                   showCommerceCard(commerce, false);
 
                 showCommerceCard(commerce, false);
 
@@ -1611,6 +1629,204 @@
                 if (stepsContainer) stepsContainer.innerHTML = '';
 
                 calculateRoute();
+            }
+
+            /**
+             * Masque les points de départ et zones de livraison non utilisés pendant l'affichage d'un itinéraire
+             * @param {number|string} activeStartPointId - ID du point de départ utilisé
+             * @param {number|string} activeDeliveryZoneId - ID de la zone de livraison utilisée
+             */
+            function hideUnusedRoutePoints(activeStartPointId, activeDeliveryZoneId) {
+                // Masquer tous les points de départ sauf celui utilisé
+                if (state.startPointMarkers && state.startPointMarkers.length) {
+                    state.startPointMarkers.forEach(function(marker) {
+                        var markerId = marker.mbcdiStartPointId;
+                        if (markerId && markerId.toString() === activeStartPointId.toString()) {
+                            // Point de départ utilisé : afficher avec effet pulse
+                            marker.setOpacity(1);
+                            // Utiliser setTimeout pour s'assurer que l'élément est dans le DOM
+                            setTimeout(function() {
+                                var iconElement = marker.getElement();
+                                if (iconElement) {
+                                    var markerDiv = iconElement.querySelector('.mbcdi-square-marker');
+                                    if (markerDiv) {
+                                        markerDiv.classList.add('mbcdi-pulse-marker');
+                                    }
+                                }
+                            }, 100);
+                        } else {
+                            // Point de départ non utilisé : masquer
+                            marker.setOpacity(0);
+                        }
+                    });
+                }
+
+                // Masquer toutes les zones de livraison sauf celle utilisée
+                if (state.deliveryZoneMarkers && state.deliveryZoneMarkers.length) {
+                    state.deliveryZoneMarkers.forEach(function(marker) {
+                        var zoneId = marker.mbcdiDeliveryZoneId;
+                        if (zoneId && zoneId.toString() === activeDeliveryZoneId.toString()) {
+                            // Zone utilisée : afficher
+                            marker.setOpacity(1);
+                        } else {
+                            // Zone non utilisée : masquer
+                            marker.setOpacity(0);
+                        }
+                    });
+                }
+
+                // Masquer tous les polygones de zones sauf celui utilisé
+                if (state.deliveryZonePolygons && state.deliveryZonePolygons.length) {
+                    state.deliveryZonePolygons.forEach(function(polygon) {
+                        var zoneId = polygon.mbcdiDeliveryZoneId;
+                        if (zoneId && zoneId.toString() === activeDeliveryZoneId.toString()) {
+                            // Zone utilisée : afficher
+                            polygon.setStyle({ opacity: 1, fillOpacity: 0.18 });
+                        } else {
+                            // Zone non utilisée : masquer
+                            polygon.setStyle({ opacity: 0, fillOpacity: 0 });
+                        }
+                    });
+                }
+
+                // Masquer tous les commerces sauf celui sélectionné
+                if (state.commerceClusterGroup && state.selectedCommerceId) {
+                    state.commerceClusterGroup.eachLayer(function(layer) {
+                        if (layer.commerceData && layer.commerceData.id) {
+                            if (layer.commerceData.id === state.selectedCommerceId) {
+                                // Commerce sélectionné : afficher
+                                layer.setOpacity(1);
+                            } else {
+                                // Commerce non sélectionné : masquer
+                                layer.setOpacity(0);
+                            }
+                        }
+                    });
+                }
+
+                mbcdiDebug('[MBCDI] Points masqués - Point actif:', activeStartPointId, 'Zone active:', activeDeliveryZoneId, 'Commerce:', state.selectedCommerceId);
+            }
+
+            /**
+             * Réaffiche tous les points de départ et zones de livraison (retire le masquage)
+             */
+            function showAllRoutePoints() {
+                // Réafficher tous les points de départ et retirer le pulse
+                if (state.startPointMarkers && state.startPointMarkers.length) {
+                    state.startPointMarkers.forEach(function(marker) {
+                        marker.setOpacity(1);
+                        var iconElement = marker.getElement();
+                        if (iconElement) {
+                            var markerDiv = iconElement.querySelector('.mbcdi-square-marker');
+                            if (markerDiv) {
+                                markerDiv.classList.remove('mbcdi-pulse-marker');
+                            }
+                        }
+                    });
+                }
+
+                // Réafficher tous les marqueurs de zones
+                if (state.deliveryZoneMarkers && state.deliveryZoneMarkers.length) {
+                    state.deliveryZoneMarkers.forEach(function(marker) {
+                        marker.setOpacity(1);
+                    });
+                }
+
+                // Réafficher tous les polygones de zones
+                if (state.deliveryZonePolygons && state.deliveryZonePolygons.length) {
+                    state.deliveryZonePolygons.forEach(function(polygon) {
+                        polygon.setStyle({ opacity: 1, fillOpacity: 0.18 });
+                    });
+                }
+
+                // Réafficher tous les commerces
+                if (state.commerceClusterGroup) {
+                    state.commerceClusterGroup.eachLayer(function(layer) {
+                        layer.setOpacity(1);
+                    });
+                }
+
+                mbcdiDebug('[MBCDI] Tous les points et commerces réaffichés');
+            }
+
+            /**
+             * Réinitialise l'itinéraire et revient à l'écran de base
+             */
+            function resetRoute() {
+                mbcdiDebug('[MBCDI] Réinitialisation de l\'itinéraire');
+
+                // Effacer les tracés de la carte
+                if (state.routeLayer) {
+                    try { state.map.removeLayer(state.routeLayer); } catch (e) {}
+                    state.routeLayer = null;
+                }
+
+                if (state.walkingLineLayer) {
+                    try { state.map.removeLayer(state.walkingLineLayer); } catch (e) {}
+                    state.walkingLineLayer = null;
+                }
+
+                // Réinitialiser la rotation de la carte (v5.5.0)
+                if (typeof state.map.setBearing === 'function' && window.MBCDI_Modular && window.MBCDI_Modular.modules && window.MBCDI_Modular.modules.rotation) {
+                    try {
+                        window.MBCDI_Modular.modules.rotation.resetRotation(state.map, {
+                            animate: true,
+                            duration: 800
+                        });
+                        mbcdiDebug('[MBCDI v5.5.0] Rotation réinitialisée vers le Nord');
+                    } catch (rotErr) {
+                        console.warn('[MBCDI v5.5.0] Erreur réinitialisation rotation:', rotErr);
+                    }
+                }
+
+                // Réafficher tous les points et commerces
+                showAllRoutePoints();
+
+                // Réinitialiser les sélections
+                state.selectedCommerceId = 0;
+                state.selectedCommerce = null;
+                state.currentRoute = null;
+
+                // Cacher le bottomsheet
+                if (bottomSheet) {
+                    bottomSheet.classList.remove('mbcdi-visible');
+                    bottomSheet.classList.remove('mbcdi-expanded');
+                }
+
+                // Réinitialiser le zoom pour afficher toute la destination
+                if (state.selectedDestinationId && data.destinations) {
+                    var dest = data.destinations.find(function(d) { return d.id === state.selectedDestinationId; });
+                    if (dest) {
+                        var bounds = L.latLngBounds([]);
+
+                        // Inclure la zone de chantier
+                        if (dest.zone && dest.zone.points && dest.zone.points.length > 0) {
+                            dest.zone.points.forEach(function(p) {
+                                bounds.extend([p.lat, p.lng]);
+                            });
+                        }
+
+                        // Inclure les points de départ
+                        if (data.startPoints && data.startPoints.length) {
+                            data.startPoints.forEach(function(sp) {
+                                if (sp.lat && sp.lng) bounds.extend([sp.lat, sp.lng]);
+                            });
+                        }
+
+                        // Inclure les zones de livraison
+                        if (data.deliveryZones && data.deliveryZones.length) {
+                            data.deliveryZones.forEach(function(z) {
+                                if (z.lat && z.lng) bounds.extend([z.lat, z.lng]);
+                            });
+                        }
+
+                        if (bounds.isValid()) {
+                            state.map.fitBounds(bounds, { padding: [50, 50] });
+                        }
+                    }
+                }
+
+                mbcdiDebug('[MBCDI] Itinéraire réinitialisé');
             }
 
             function calculateRoute() {
@@ -1676,6 +1892,19 @@
                                 }).addTo(state.map);
 
                                 mbcdiDebug(' v5.0.6] Tracé véhicule affiché:', vehicleCoords.length, 'points');
+
+                                // Rotation automatique de la carte vers l'itinéraire (v5.5.0)
+                                if (typeof state.map.setBearing === 'function' && vehicleCoords.length >= 2 && window.MBCDI_Modular && window.MBCDI_Modular.modules && window.MBCDI_Modular.modules.rotation) {
+                                    try {
+                                        var bearing = window.MBCDI_Modular.modules.rotation.rotateToRoute(state.map, vehicleCoords, {
+                                            animate: true,
+                                            duration: 1200
+                                        });
+                                        mbcdiDebug('[MBCDI v5.5.0] Rotation automatique appliquée:', bearing, '°');
+                                    } catch (rotErr) {
+                                        console.warn('[MBCDI v5.5.0] Erreur rotation automatique:', rotErr);
+                                    }
+                                }
                             }
                         }
 
@@ -1719,6 +1948,11 @@
                             state.map.fitBounds(allBounds, { padding: [80, 120] });
                         } else if (state.routeLayer) {
                             state.map.fitBounds(state.routeLayer.getBounds(), { padding: [80, 120] });
+                        }
+
+                        // Masquer les points de départ et zones de livraison non utilisés
+                        if (route.start_point_id && route.delivery_zone_id) {
+                            hideUnusedRoutePoints(route.start_point_id, route.delivery_zone_id);
                         }
 
                         showResult(route);

@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: MBCDI - Itinéraires V5.5.0
- * Description: Gestion d'itinéraires par zones de livraison. Refonte bottom sheet.
- * Version: 5.5.0
+ * Plugin Name: MBCDI - Itinéraires V5.5.3
+ * Description: Gestion d'itinéraires par zones de livraison. Bottom sheet + rotation fonctionnels.
+ * Version: 5.5.3
  * Author: Roch de Dinechin
  * Text Domain: mbcdi
  * Requires PHP: 8.0
@@ -13,8 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-// Version plugin: 5.5.0
-define( 'MBCDI_VERSION', '5.5.0' );
+// Version plugin: 5.5.3
+define( 'MBCDI_VERSION', '5.5.3' );
 define( 'MBCDI_PLUGIN_FILE', __FILE__ );
 define( 'MBCDI_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'MBCDI_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -36,6 +36,8 @@ require_once MBCDI_PLUGIN_DIR . 'includes/class-mbcdi-cpt.php';
 require_once MBCDI_PLUGIN_DIR . 'includes/class-mbcdi-cpt-itineraries.php';
 require_once MBCDI_PLUGIN_DIR . 'includes/class-mbcdi-frontend.php';
 require_once MBCDI_PLUGIN_DIR . 'includes/class-mbcdi-csv-importer.php';
+// Ancien système bottom sheet désactivé - remplacé par v5.5.0
+// require_once MBCDI_PLUGIN_DIR . 'includes/class-mbcdi-bottomsheet.php';
 
 final class MBCDI_Plugin {
 

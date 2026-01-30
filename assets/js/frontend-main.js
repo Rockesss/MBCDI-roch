@@ -1,7 +1,7 @@
 /**
  * MBCDI Frontend Main - Point d'entrée modulaire
  * Orchestre tous les modules ES6
- * @version 5.5.0
+ * @version 5.5.1
  */
 
 // Import des modules
@@ -10,7 +10,8 @@ import { formatDistance, formatDuration, calculateDistance, escapeHtml, debounce
 import { getStepText, translate, STEP_I18N } from './modules/i18n.js';
 import { initMap, centerMap, fitBounds } from './modules/map.js';
 import { initClusterGroup, addCommercesToCluster, createUserMarker, removeLayer } from './modules/markers.js';
-import { calculateRoute, createRoutePolyline, getRouteSummary, createWalkingLine } from './modules/routing.js';
+import { calculateRoute, createRoutePolyline, createRoutePolylineWithRotation, getRouteSummary, createWalkingLine } from './modules/routing.js';
+import { enableRotation, rotateMap, resetRotation, calculateBearing, getCurrentBearing, createRotationControl, rotateToRoute, enableManualRotation } from './modules/rotation.js';
 import { 
     buildCommerceCardHTML, 
     buildCommerceListHTML, 
@@ -47,7 +48,8 @@ window.MBCDI_Modular = {
         i18n: { getStepText, translate, STEP_I18N },
         map: { initMap, centerMap, fitBounds },
         markers: { initClusterGroup, addCommercesToCluster, createUserMarker, removeLayer },
-        routing: { calculateRoute, createRoutePolyline, getRouteSummary, createWalkingLine },
+        routing: { calculateRoute, createRoutePolyline, createRoutePolylineWithRotation, getRouteSummary, createWalkingLine },
+        rotation: { enableRotation, rotateMap, resetRotation, calculateBearing, getCurrentBearing, createRotationControl, rotateToRoute, enableManualRotation },
         commerce: { buildCommerceCardHTML, buildCommerceListHTML, sortCommercesByDistance, createCommerceIcon, filterCommerces, findCommerceById },
         ui: { showBottomSheet, hideBottomSheet, toggleBottomSheetExpansion, showFieldError, clearFieldError, clearAllErrors, showLoading, hideLoading, setAppExpanded, showModal, hideModal, showToast, switchView }
     },
@@ -108,12 +110,23 @@ window.MBCDI_Modular = {
 
         // Initialiser le clustering
         state.commerceClusterGroup = initClusterGroup();
-        
+
         const commerces = firstDest.commerces || [];
-        
+
         if (state.commerceClusterGroup) {
             addCommercesToCluster(state.commerceClusterGroup, commerces, state.map);
             console.log('[MBCDI Modular] Clustering initialisé avec', commerces.length, 'commerces');
+        }
+
+        // Ajouter le contrôle de rotation si la rotation est supportée
+        if (typeof state.map.setBearing === 'function') {
+            state.rotationControl = createRotationControl(state.map, {
+                position: 'topright',
+                onRotate: function(bearing) {
+                    console.log('[MBCDI Modular] Rotation manuelle vers', bearing, '°');
+                }
+            });
+            console.log('[MBCDI Modular] Contrôle de rotation ajouté');
         }
 
         // Rendre la liste des commerces si le conteneur existe

@@ -1,7 +1,7 @@
 /**
- * MBCDI Integration v5.5.0
+ * MBCDI Integration v5.5.1
  * Intégration du nouveau bottom sheet - CORRECTION remplissage champ destination
- * @version 5.5.0
+ * @version 5.5.1
  */
 
 (function() {

@@ -1,6 +1,6 @@
 /**
- * MBCDI Bottom Sheet v5.5.0
- * @version 5.5.0
+ * MBCDI Bottom Sheet v5.5.1
+ * @version 5.5.1
  */
 
 /* Bottom sheet base */
@@ -9,7 +9,7 @@
     bottom: 0 !important;
     left: 0 !important;
     right: 0 !important;
-    z-index: 1000 !important;
+    z-index: 1000000 !important;
     background: #fff !important;
     border-radius: 16px 16px 0 0 !important;
     box-shadow: 0 -4px 20px rgba(0,0,0,0.15) !important;
