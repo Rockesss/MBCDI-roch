@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>MBCDI Bottom Sheet - Test</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Bottom Sheet CSS -->
+    <link rel="stylesheet" href="../assets/css/mbcdi-bottomsheet.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1;
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 5000;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 300px;
+        }
+
+        .controls h3 {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .controls button {
+            display: block;
+            width: 100%;
+            margin: 5px 0;
+            padding: 8px;
+            border: 1px solid #007aff;
+            background: white;
+            color: #007aff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .controls button:hover {
+            background: #007aff;
+            color: white;
+        }
+
+        .log {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 5000;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            max-width: 300px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 11px;
+        }
+
+        .log div {
+            margin: 3px 0;
+            padding: 3px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .log .event {
+            color: #00d4ff;
+        }
+    </style>
+</head>
+<body>
+    <!-- Carte Leaflet -->
+    <div id="map"></div>
+
+    <!-- Contrôles de test -->
+    <div class="controls">
+        <h3>🧪 Tests du Bottom Sheet</h3>
+        <button onclick="testOpenPeek()">Ouvrir PEEK</button>
+        <button onclick="testOpenFull()">Ouvrir FULL</button>
+        <button onclick="testClose()">Fermer</button>
+        <button onclick="testShowList()">Afficher Liste</button>
+        <button onclick="testShowDetail()">Afficher Détail #1</button>
+        <button onclick="testSetTitle()">Changer titre</button>
+        <button onclick="testAddCommerces()">Ajouter commerces</button>
+        <button onclick="testClearLog()">Effacer log</button>
+    </div>
+
+    <!-- Log des événements -->
+    <div id="log" class="log">
+        <div><strong>📝 Event Log</strong></div>
+    </div>
+
+    <!-- Bottom Sheet -->
+    <div id="mbcdi-bottomsheet"
+         class="mbcdi-bottomsheet"
+         data-state="closed"
+         data-view="list"
+         role="dialog"
+         aria-modal="false"
+         aria-label="Commerces à proximité">
+
+        <div class="mbcdi-bottomsheet__handle-area">
+            <div class="mbcdi-bottomsheet__handle"></div>
+        </div>
+
+        <header class="mbcdi-bottomsheet__header">
+            <button type="button"
+                    class="mbcdi-bottomsheet__header-btn mbcdi-bottomsheet__btn-back"
+                    aria-label="Retour à la liste"
+                    title="Retour">
+                ←
+            </button>
+
+            <h2 class="mbcdi-bottomsheet__header-title">Commerces à proximité</h2>
+
+            <button type="button"
+                    class="mbcdi-bottomsheet__header-btn mbcdi-bottomsheet__btn-close"
+                    aria-label="Fermer"
+                    title="Fermer">
+                ×
+            </button>
+        </header>
+
+        <div class="mbcdi-bottomsheet__content">
+            <div class="mbcdi-bottomsheet__list">
+                <div class="mbcdi-bottomsheet__empty">
+                    Aucun commerce à afficher. Cliquez sur "Ajouter commerces".
+                </div>
+            </div>
+
+            <div class="mbcdi-bottomsheet__detail"></div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Bottom Sheet JS -->
+    <script src="../assets/js/mbcdi-bottomsheet.js"></script>
+
+    <script>
+        // ============================================
+        // INITIALISATION CARTE
+        // ============================================
+
+        const map = L.map('map').setView([45.7578, 4.8320], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // ============================================
+        // DONNÉES DE TEST
+        // ============================================
+
+        const testCommerces = [
+            {
+                id: 1,
+                nom: 'Boulangerie Artisanale Dupont',
+                adresse: '12 Rue de la République, 69001 Lyon',
+                lat: 45.7678,
+                lng: 4.8352,
+                tel: '0472123456',
+                site: 'https://boulangerie-dupont.fr',
+                description: 'Boulangerie artisanale traditionnelle depuis 1950. Pain au levain, viennoiseries maison, pâtisseries fines.',
+                horaires: [
+                    { jour: 'Lundi', heures: '7h00 - 19h30' },
+                    { jour: 'Mardi', heures: '7h00 - 19h30' },
+                    { jour: 'Mercredi', heures: '7h00 - 19h30' },
+                    { jour: 'Jeudi', heures: '7h00 - 19h30' },
+                    { jour: 'Vendredi', heures: '7h00 - 19h30' },
+                    { jour: 'Samedi', heures: '7h00 - 13h00' },
+                    { jour: 'Dimanche', heures: 'Fermé' }
+                ],
+                distance: 350
+            },
+            {
+                id: 2,
+                nom: 'Pharmacie Saint-Jean',
+                adresse: '45 Avenue du Maréchal Foch, 69006 Lyon',
+                lat: 45.7710,
+                lng: 4.8425,
+                tel: '0478987654',
+                site: 'https://pharmacie-stjean.fr',
+                description: 'Pharmacie de garde le week-end. Conseil personnalisé, parapharmacie, orthopédie.',
+                horaires: [
+                    { jour: 'Lun-Sam', heures: '9h00 - 20h00' },
+                    { jour: 'Dimanche', heures: '10h00 - 13h00' }
+                ],
+                distance: 1200
+            },
+            {
+                id: 3,
+                nom: 'Épicerie Bio La Fourmi',
+                adresse: '8 Rue de la Charité, 69002 Lyon',
+                lat: 45.7505,
+                lng: 4.8290,
+                tel: '0426543210',
+                site: 'https://lafourmi-bio.fr',
+                description: 'Produits biologiques locaux et équitables. Fruits, légumes, vrac, cosmétiques naturels.',
+                horaires: [
+                    { jour: 'Mar-Sam', heures: '9h30 - 19h00' },
+                    { jour: 'Lun/Dim', heures: 'Fermé' }
+                ],
+                distance: 850
+            },
+            {
+                id: 4,
+                nom: 'Café des Arts',
+                adresse: '22 Quai Saint-Antoine, 69002 Lyon',
+                lat: 45.7592,
+                lng: 4.8275,
+                tel: '0472456789',
+                description: 'Café convivial avec terrasse sur les quais. Petits déjeuners, brunchs, tapas.',
+                distance: 600
+            },
+            {
+                id: 5,
+                nom: 'Librairie Le Livre Ouvert',
+                adresse: '33 Rue de la Bourse, 69002 Lyon',
+                lat: 45.7630,
+                lng: 4.8365,
+                tel: '0478321456',
+                site: 'https://livre-ouvert.fr',
+                description: 'Librairie indépendante spécialisée en littérature contemporaine et BD.',
+                horaires: [
+                    { jour: 'Lun-Sam', heures: '10h00 - 19h00' },
+                    { jour: 'Dimanche', heures: 'Fermé' }
+                ],
+                distance: 450
+            }
+        ];
+
+        // ============================================
+        // INITIALISATION BOTTOM SHEET
+        // ============================================
+
+        const bs = window.MBCDI_BottomSheet;
+
+        bs.init({
+            containerSelector: '#mbcdi-bottomsheet',
+            initialState: 'closed',
+            enableSearch: true,
+            searchPlaceholder: 'Rechercher un commerce...',
+            emptyMessage: 'Aucun commerce à afficher',
+            listTitle: 'Commerces à proximité',
+            detailTitle: 'Détail du commerce',
+
+            onSelect: function(commerce) {
+                log(`onSelect: ${commerce.nom}`);
+            },
+
+            onRoute: function(commerce) {
+                log(`onRoute: ${commerce.nom}`);
+                alert(`Calcul d'itinéraire vers ${commerce.nom}...`);
+            },
+
+            onClose: function() {
+                log('onClose');
+            }
+        });
+
+        // ============================================
+        // MARKERS SUR LA CARTE
+        // ============================================
+
+        let markers = [];
+
+        function addMarkersToMap(commerces) {
+            // Supprimer les anciens markers
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+
+            // Ajouter les nouveaux
+            commerces.forEach(commerce => {
+                if (commerce.lat && commerce.lng) {
+                    const marker = L.marker([commerce.lat, commerce.lng]).addTo(map);
+
+                    marker.bindPopup(`
+                        <strong>${commerce.nom}</strong><br>
+                        ${commerce.adresse || ''}<br>
+                        ${commerce.distance ? `<em>${formatDistance(commerce.distance)}</em>` : ''}
+                    `);
+
+                    marker.on('click', () => {
+                        bs.showDetail(commerce.id);
+                    });
+
+                    markers.push(marker);
+                }
+            });
+
+            // Ajuster la vue
+            if (markers.length > 0) {
+                const group = L.featureGroup(markers);
+                map.fitBounds(group.getBounds(), { padding: [50, 50] });
+            }
+        }
+
+        function formatDistance(meters) {
+            if (meters < 1000) {
+                return `${Math.round(meters)} m`;
+            }
+            return `${(meters / 1000).toFixed(1)} km`;
+        }
+
+        // ============================================
+        // ÉVÉNEMENTS CUSTOM
+        // ============================================
+
+        window.addEventListener('mbcdi:sheet:statechange', (e) => {
+            log(`🔄 State: ${e.detail.state} (was: ${e.detail.previousState})`);
+
+            // Désactiver/activer carte
+            if (e.detail.state === 'open') {
+                map.dragging.disable();
+                map.scrollWheelZoom.disable();
+            } else {
+                map.dragging.enable();
+                map.scrollWheelZoom.enable();
+            }
+        });
+
+        window.addEventListener('mbcdi:sheet:viewchange', (e) => {
+            log(`👁️ View: ${e.detail.view}`);
+        });
+
+        window.addEventListener('mbcdi:commerce:select', (e) => {
+            log(`✅ Sélection: ${e.detail.commerce.nom}`);
+
+            // Centrer carte
+            const c = e.detail.commerce;
+            if (c.lat && c.lng) {
+                map.setView([c.lat, c.lng], 16, { animate: true });
+            }
+        });
+
+        window.addEventListener('mbcdi:commerce:call', (e) => {
+            log(`📞 Appel: ${e.detail.phone}`);
+        });
+
+        window.addEventListener('mbcdi:commerce:website', (e) => {
+            log(`🌐 Site: ${e.detail.url}`);
+        });
+
+        window.addEventListener('mbcdi:commerce:route', (e) => {
+            log(`🧭 Itinéraire: ${e.detail.commerce.nom}`);
+        });
+
+        window.addEventListener('mbcdi:sheet:open', () => {
+            log('📖 Sheet ouvert');
+        });
+
+        window.addEventListener('mbcdi:sheet:close', () => {
+            log('📕 Sheet fermé');
+        });
+
+        // ============================================
+        // FONCTIONS DE TEST
+        // ============================================
+
+        function testOpenPeek() {
+            bs.openPeek();
+            log('TEST: openPeek()');
+        }
+
+        function testOpenFull() {
+            bs.openFull();
+            log('TEST: openFull()');
+        }
+
+        function testClose() {
+            bs.close();
+            log('TEST: close()');
+        }
+
+        function testShowList() {
+            bs.showList();
+            log('TEST: showList()');
+        }
+
+        function testShowDetail() {
+            if (bs.getItems().length === 0) {
+                alert('Ajoutez d\'abord des commerces !');
+                return;
+            }
+            bs.showDetail(1);
+            log('TEST: showDetail(1)');
+        }
+
+        function testSetTitle() {
+            bs.setTitle('🎉 Nouveau titre !');
+            log('TEST: setTitle()');
+        }
+
+        function testAddCommerces() {
+            bs.setItems(testCommerces);
+            addMarkersToMap(testCommerces);
+            bs.openPeek();
+            log('TEST: setItems() - 5 commerces ajoutés');
+        }
+
+        function testClearLog() {
+            document.getElementById('log').innerHTML = '<div><strong>📝 Event Log</strong></div>';
+        }
+
+        // ============================================
+        // LOGGING
+        // ============================================
+
+        function log(message) {
+            const logEl = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString('fr-FR');
+            const div = document.createElement('div');
+            div.innerHTML = `<span class="event">[${timestamp}]</span> ${message}`;
+            logEl.appendChild(div);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        // ============================================
+        // DÉMARRAGE
+        // ============================================
+
+        log('✅ Bottom Sheet initialisé');
+        log('🗺️ Carte Leaflet chargée');
+        log('👉 Cliquez sur "Ajouter commerces" pour commencer');
+    </script>
+</body>
+</html>

@@ -9,9 +9,11 @@
  * @param {HTMLElement} container - Container de la carte
  * @param {Object} center - {lat, lng} centre initial
  * @param {number} zoom - Niveau de zoom initial
+ * @param {Object} options - Options supplémentaires
+ * @param {boolean} options.enableRotation - Activer la rotation (défaut: true)
  * @returns {Object} Instance Leaflet map
  */
-export function initMap(container, center, zoom = 15) {
+export function initMap(container, center, zoom = 15, options = {}) {
     if (!container) {
         console.error('[MBCDI Map] Container invalide');
         return null;
@@ -19,10 +21,28 @@ export function initMap(container, center, zoom = 15) {
 
     container.classList.remove('mbcdi-skeleton');
 
-    const map = L.map(container, {
+    const defaultOptions = {
+        enableRotation: true
+    };
+
+    const opts = { ...defaultOptions, ...options };
+
+    // Options de base de la carte
+    const mapOptions = {
         zoomControl: false,
         attributionControl: false
-    }).setView([center.lat, center.lng], zoom);
+    };
+
+    // Ajouter les options de rotation si leaflet-rotate est disponible
+    if (opts.enableRotation && typeof L.Map.prototype.setBearing === 'function') {
+        mapOptions.rotate = true;
+        mapOptions.bearing = 0;
+        mapOptions.touchRotate = true;
+        mapOptions.shiftKeyRotate = true;
+        console.log('[MBCDI Map] Rotation activée');
+    }
+
+    const map = L.map(container, mapOptions).setView([center.lat, center.lng], zoom);
 
     // Ajouter les tiles OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

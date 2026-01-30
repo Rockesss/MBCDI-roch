@@ -1,7 +1,7 @@
 /**
  * MBCDI Frontend Responsive CSS
  * Media queries et adaptations responsive
- * @version 5.5.0
+ * @version 5.5.1
  * @package MBCDI
  * 
  * Architecture: Mobile-first
@@ -328,13 +328,10 @@
         width: 380px !important;
         border-radius: 16px !important;
         max-height: 60vh !important;
-    }
-    
-    .mbcdi-bottomsheet.mbcdi-visible {
         transform: translateY(calc(100% - 80px)) !important;
     }
-    
-    .mbcdi-bottomsheet.mbcdi-visible.mbcdi-expanded {
+
+    .mbcdi-bottomsheet.mbcdi-expanded {
         transform: translateY(0) !important;
     }
 }

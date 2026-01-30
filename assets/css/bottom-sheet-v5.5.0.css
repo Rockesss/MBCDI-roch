@@ -1,6 +1,6 @@
 /**
- * MBCDI Bottom Sheet v5.5.0
- * @version 5.5.0
+ * MBCDI Bottom Sheet v5.5.10
+ * @version 5.5.10
  */
 
 /* Bottom sheet base */
@@ -9,7 +9,7 @@
     bottom: 0 !important;
     left: 0 !important;
     right: 0 !important;
-    z-index: 1000 !important;
+    z-index: 9999 !important;
     background: #fff !important;
     border-radius: 16px 16px 0 0 !important;
     box-shadow: 0 -4px 20px rgba(0,0,0,0.15) !important;
@@ -18,6 +18,9 @@
     flex-direction: column !important;
     padding-bottom: env(safe-area-inset-bottom) !important;
     overflow: hidden !important;
+    min-height: 200px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     transform: translateY(calc(100% - 120px)) !important;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
@@ -433,5 +436,445 @@
     
     .mbcdi-bottomsheet {
         max-height: 80vh !important;
+    }
+}
+
+/* ========================================
+   TITRE ET ANIMATION TRAJET EN COURS v5.5.8
+   ======================================== */
+
+/* Titre "Trajet en cours" au même niveau que "Commerces à proximité" */
+.mbcdi-bs-route-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 16px 12px 16px;
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #000;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+/* Conteneur icône animée */
+.mbcdi-bs-route-icon-animated {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+/* Icône de navigation avec animation pulse + rotation */
+.mbcdi-bs-navigation-pulse {
+    width: 24px;
+    height: 24px;
+    color: #007AFF;
+    animation: mbcdi-navigation-pulse 2s ease-in-out infinite;
+}
+
+/* Animation pulse + rotation pour l'icône de navigation */
+@keyframes mbcdi-navigation-pulse {
+    0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    25% {
+        transform: scale(1.1) rotate(90deg);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1) rotate(180deg);
+        opacity: 1;
+    }
+    75% {
+        transform: scale(1.1) rotate(270deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1) rotate(360deg);
+        opacity: 1;
+    }
+}
+
+/* Sur mobile, réduire légèrement la taille */
+@media (max-width: 768px) {
+    .mbcdi-bs-route-title {
+        font-size: 20px;
+        padding: 14px 14px 10px 14px;
+    }
+    
+    .mbcdi-bs-route-icon-animated {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .mbcdi-bs-navigation-pulse {
+        width: 22px;
+        height: 22px;
+    }
+}
+
+/* ========================================
+   ANIMATION TRANSITION TITRE v5.5.9
+   ======================================== */
+
+/* Transition fluide lors du changement de titre (liste <-> trajet) */
+.mbcdi-bs-list-title,
+.mbcdi-bs-route-title {
+    animation: mbcdi-title-fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animation apparition du titre avec fondu + slide */
+@keyframes mbcdi-title-fade-in {
+    0% {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animation disparition (pour transition fluide) */
+.mbcdi-bs-title-fade-out {
+    animation: mbcdi-title-fade-out 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes mbcdi-title-fade-out {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+}
+
+/* ========================================
+   ÉTAT 2 : DÉTAIL COMMERCE V2 - v5.5.9
+   ======================================== */
+
+/* Bouton Retour en haut à gauche */
+.mbcdi-bs-btn-back {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F6F6F6;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.mbcdi-bs-btn-back:hover {
+    background: #E5E5EA;
+    transform: scale(1.05);
+}
+
+.mbcdi-bs-btn-back:active {
+    transform: scale(0.95);
+}
+
+.mbcdi-bs-btn-back .mbcdi-bs-btn-icon {
+    width: 20px;
+    height: 20px;
+    color: #1D1D1F;
+}
+
+/* Logo centré au-dessus du titre */
+.mbcdi-bs-detail-logo-wrapper-centered {
+    display: flex;
+    justify-content: center;
+    padding: 56px 16px 16px 16px;
+}
+
+.mbcdi-bs-detail-logo-centered {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mbcdi-bs-detail-logo-centered.mbcdi-bs-detail-logo-placeholder {
+    background: #F2F2F7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+}
+
+/* Titre centré */
+.mbcdi-bs-detail-title-centered {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: #000;
+    margin: 0 0 8px 0;
+    padding: 0 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+/* Adresse centrée en gris */
+.mbcdi-bs-detail-address-centered {
+    text-align: center;
+    font-size: 15px;
+    color: #8E8E93;
+    margin: 0 0 16px 0;
+    padding: 0 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+/* Boutons Appeler + Site web côte à côte */
+.mbcdi-bs-detail-contact-buttons {
+    display: flex;
+    gap: 8px;
+    padding: 0 16px 16px 16px;
+}
+
+.mbcdi-bs-detail-contact-buttons .mbcdi-bs-btn {
+    flex: 1;
+    justify-content: center;
+}
+
+/* Labels de section (DESCRIPTION, HORAIRES) */
+.mbcdi-bs-section {
+    padding: 16px;
+    border-top: 1px solid #E5E5EA;
+}
+
+.mbcdi-bs-section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #8E8E93;
+    letter-spacing: 0.5px;
+    margin: 0 0 8px 0;
+    text-transform: uppercase;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+.mbcdi-bs-section-text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #000;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+/* Liste des horaires */
+.mbcdi-bs-hours-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mbcdi-bs-hours-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    line-height: 1.4;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+.mbcdi-bs-hours-day {
+    color: #000;
+    font-weight: 500;
+}
+
+.mbcdi-bs-hours-time {
+    color: #8E8E93;
+    text-align: right;
+}
+
+.mbcdi-bs-hours-text {
+    color: #000;
+}
+
+/* Actions avec un seul bouton (pleine largeur) */
+.mbcdi-bs-detail-actions-single {
+    padding: 16px;
+    border-top: 1px solid #E5E5EA;
+}
+
+.mbcdi-bs-detail-actions-single .mbcdi-bs-btn {
+    width: 100%;
+    justify-content: center;
+    font-size: 17px;
+    font-weight: 600;
+    padding: 14px 20px;
+}
+
+.mbcdi-bs-btn-goto {
+    /* Bouton "Y aller" - déjà stylé avec mbcdi-bs-btn-primary */
+}
+
+/* ========================================
+   ÉTAT 4 : TRAJET DÉTAIL V2 - v5.5.9
+   ======================================== */
+
+/* Logo centré en haut */
+.mbcdi-bs-route-detail-logo-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 16px;
+}
+
+.mbcdi-bs-route-detail-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mbcdi-bs-route-detail-logo-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    background: #F2F2F7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+}
+
+/* Nom commerce (trajet) */
+.mbcdi-bs-route-detail-name {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: #000;
+    margin: 0 0 8px 0;
+    padding: 0 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+/* Adresse (trajet) */
+.mbcdi-bs-route-detail-address {
+    text-align: center;
+    font-size: 14px;
+    color: #8E8E93;
+    margin: 0 0 16px 0;
+    padding: 0 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+/* Section "TRAJET EN COURS" */
+.mbcdi-bs-route-status-section {
+    background: #F2F2F7;
+    border-top: none;
+}
+
+/* Section "TRAJET EN COURS" pour État 3 (mini) */
+.mbcdi-bs-route-status-section-mini {
+    background: #F2F2F7;
+    border-top: none;
+    margin: 0;
+    padding: 12px 16px;
+}
+
+/* Animation Lottie - ligne qui bouge */
+.mbcdi-bs-route-animation {
+    position: relative;
+    height: 4px;
+    background: #E5E5EA;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.mbcdi-bs-route-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 30%;
+    background: linear-gradient(90deg, #007AFF 0%, #00C7FF 100%);
+    border-radius: 2px;
+    animation: mbcdi-route-progress 1.5s ease-in-out infinite;
+}
+
+@keyframes mbcdi-route-progress {
+    0% {
+        left: -30%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* Infos de contact (trajet) */
+.mbcdi-bs-route-detail-infos {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mbcdi-bs-route-detail-info-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    line-height: 1.4;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+.mbcdi-bs-route-detail-info-row .mbcdi-bs-icon {
+    width: 20px;
+    height: 20px;
+    color: #8E8E93;
+    flex-shrink: 0;
+}
+
+.mbcdi-bs-route-detail-info-row a.mbcdi-bs-link {
+    color: #007AFF;
+    text-decoration: none;
+}
+
+.mbcdi-bs-route-detail-info-row a.mbcdi-bs-link:hover {
+    text-decoration: underline;
+}
+
+/* Bouton Arrêter pleine largeur */
+.mbcdi-bs-btn-stop-full {
+    /* Déjà stylé avec mbcdi-bs-btn-danger et mbcdi-bs-detail-actions-single */
+}
+
+/* ========================================
+   RESPONSIVE v5.5.9
+   ======================================== */
+
+@media (max-width: 768px) {
+    .mbcdi-bs-detail-title-centered {
+        font-size: 22px;
+    }
+
+    .mbcdi-bs-route-detail-name {
+        font-size: 20px;
+    }
+
+    .mbcdi-bs-route-detail-logo,
+    .mbcdi-bs-route-detail-logo-placeholder {
+        width: 70px;
+        height: 70px;
+    }
+
+    .mbcdi-bs-detail-contact-buttons {
+        flex-direction: column;
+    }
+
+    .mbcdi-bs-detail-contact-buttons .mbcdi-bs-btn {
+        width: 100%;
     }
 }

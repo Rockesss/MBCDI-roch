@@ -1,0 +1,665 @@
+/**
+ * MBCDI Bottom Sheet Component
+ * Version: 1.0.0
+ * Auteur: Claude AI
+ * Description: Composant bottom sheet autonome mobile-first avec drag vertical,
+ *              3 états (CLOSED/PEEK/OPEN), 2 vues (LIST/DETAIL)
+ *
+ * Points d'intégration:
+ * - Enqueue via wp_enqueue_style() sur pages avec shortcode
+ * - Aucune dépendance externe (pas de Bootstrap, jQuery, etc.)
+ * - Compatible Leaflet (z-index géré pour ne pas interférer)
+ * - Utilise data-state="closed|peek|open" et data-view="list|detail"
+ *
+ * Classes principales:
+ * - .mbcdi-bottomsheet : Container principal
+ * - .mbcdi-bottomsheet__handle : Poignée de drag
+ * - .mbcdi-bottomsheet__header : En-tête sticky
+ * - .mbcdi-bottomsheet__content : Zone scrollable
+ * - .mbcdi-bottomsheet__list : Vue liste
+ * - .mbcdi-bottomsheet__card : Card commerce
+ * - .mbcdi-bottomsheet__detail : Vue détail
+ */
+
+/* ========================================
+   VARIABLES CSS
+   ======================================== */
+
+:root {
+  /* Couleurs */
+  --mbcdi-bs-bg: #ffffff;
+  --mbcdi-bs-border: #e5e5ea;
+  --mbcdi-bs-shadow: rgba(0, 0, 0, 0.15);
+  --mbcdi-bs-handle: #c7c7cc;
+  --mbcdi-bs-text-primary: #000000;
+  --mbcdi-bs-text-secondary: #8e8e93;
+  --mbcdi-bs-accent: #007aff;
+  --mbcdi-bs-hover: #f2f2f7;
+  --mbcdi-bs-active: #e5e5ea;
+
+  /* Espacements */
+  --mbcdi-bs-radius: 20px;
+  --mbcdi-bs-padding: 16px;
+  --mbcdi-bs-gap: 12px;
+
+  /* Hauteurs des états */
+  --mbcdi-bs-peek-height: 35vh;
+  --mbcdi-bs-open-height: 92vh;
+
+  /* Timings */
+  --mbcdi-bs-transition-duration: 280ms;
+  --mbcdi-bs-transition-easing: cubic-bezier(0.4, 0.0, 0.2, 1);
+
+  /* Z-index (Leaflet utilise 400-1000) */
+  --mbcdi-bs-z-index: 10000;
+
+  /* Safe area iOS */
+  --mbcdi-bs-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Dark mode support (optionnel) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --mbcdi-bs-bg: #1c1c1e;
+    --mbcdi-bs-border: #38383a;
+    --mbcdi-bs-text-primary: #ffffff;
+    --mbcdi-bs-text-secondary: #98989d;
+    --mbcdi-bs-hover: #2c2c2e;
+    --mbcdi-bs-active: #38383a;
+  }
+}
+
+/* ========================================
+   CONTAINER PRINCIPAL
+   ======================================== */
+
+.mbcdi-bottomsheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--mbcdi-bs-z-index);
+
+  /* Hauteur initiale */
+  height: var(--mbcdi-bs-peek-height);
+  max-height: 100vh;
+
+  /* Apparence */
+  background: var(--mbcdi-bs-bg);
+  border-radius: var(--mbcdi-bs-radius) var(--mbcdi-bs-radius) 0 0;
+  box-shadow: 0 -2px 20px var(--mbcdi-bs-shadow);
+
+  /* Transitions fluides */
+  transition:
+    transform var(--mbcdi-bs-transition-duration) var(--mbcdi-bs-transition-easing),
+    height var(--mbcdi-bs-transition-duration) var(--mbcdi-bs-transition-easing),
+    opacity var(--mbcdi-bs-transition-duration) var(--mbcdi-bs-transition-easing);
+
+  /* Structure flexbox */
+  display: flex;
+  flex-direction: column;
+
+  /* Accessibilité */
+  touch-action: none; /* Empêche le scroll pendant drag */
+  will-change: transform, height;
+
+  /* iOS safe area */
+  padding-bottom: var(--mbcdi-bs-safe-bottom);
+}
+
+/* État CLOSED */
+.mbcdi-bottomsheet[data-state="closed"] {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* État PEEK (semi-ouvert) */
+.mbcdi-bottomsheet[data-state="peek"] {
+  height: var(--mbcdi-bs-peek-height);
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* État OPEN (plein écran) */
+.mbcdi-bottomsheet[data-state="open"] {
+  height: var(--mbcdi-bs-open-height);
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Pendant le drag (appliqué par JS) */
+.mbcdi-bottomsheet.is-dragging {
+  transition: none !important;
+}
+
+/* ========================================
+   POIGNÉE (HANDLE)
+   ======================================== */
+
+.mbcdi-bottomsheet__handle-area {
+  flex-shrink: 0;
+  padding: 8px 0;
+  cursor: grab;
+  touch-action: none;
+
+  /* Centre la poignée */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mbcdi-bottomsheet__handle-area:active {
+  cursor: grabbing;
+}
+
+.mbcdi-bottomsheet__handle {
+  width: 40px;
+  height: 5px;
+  background: var(--mbcdi-bs-handle);
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+/* ========================================
+   HEADER (STICKY)
+   ======================================== */
+
+.mbcdi-bottomsheet__header {
+  flex-shrink: 0;
+  position: relative;
+  padding: var(--mbcdi-bs-padding);
+  border-bottom: 1px solid var(--mbcdi-bs-border);
+  background: var(--mbcdi-bs-bg);
+
+  /* Sticky */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  /* Layout */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+
+  /* Drag support sur header */
+  touch-action: none;
+  cursor: grab;
+}
+
+.mbcdi-bottomsheet__header:active {
+  cursor: grabbing;
+}
+
+.mbcdi-bottomsheet__header-title {
+  flex: 1;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--mbcdi-bs-text-primary);
+  text-align: center;
+}
+
+.mbcdi-bottomsheet__header-btn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--mbcdi-bs-accent);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 150ms ease;
+
+  /* Centre l'icône */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 1;
+
+  /* Désactive drag sur boutons */
+  touch-action: auto;
+}
+
+.mbcdi-bottomsheet__header-btn:hover {
+  background: var(--mbcdi-bs-hover);
+}
+
+.mbcdi-bottomsheet__header-btn:active {
+  background: var(--mbcdi-bs-active);
+}
+
+.mbcdi-bottomsheet__header-btn:focus-visible {
+  outline: 2px solid var(--mbcdi-bs-accent);
+  outline-offset: 2px;
+}
+
+/* Bouton back (caché en vue liste) */
+.mbcdi-bottomsheet[data-view="list"] .mbcdi-bottomsheet__btn-back {
+  display: none;
+}
+
+/* Bouton close toujours visible */
+.mbcdi-bottomsheet__btn-close {
+  margin-left: auto;
+}
+
+/* ========================================
+   CONTENU SCROLLABLE
+   ======================================== */
+
+.mbcdi-bottomsheet__content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+
+  /* Masque scrollbar sur mobile */
+  scrollbar-width: thin;
+}
+
+.mbcdi-bottomsheet__content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.mbcdi-bottomsheet__content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mbcdi-bottomsheet__content::-webkit-scrollbar-thumb {
+  background: var(--mbcdi-bs-handle);
+  border-radius: 3px;
+}
+
+/* ========================================
+   VUE LISTE
+   ======================================== */
+
+.mbcdi-bottomsheet__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mbcdi-bs-gap);
+  padding: var(--mbcdi-bs-padding);
+}
+
+/* Masque la liste quand en vue détail */
+.mbcdi-bottomsheet[data-view="detail"] .mbcdi-bottomsheet__list {
+  display: none;
+}
+
+/* Champ de recherche optionnel */
+.mbcdi-bottomsheet__search {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--mbcdi-bs-bg);
+  padding-bottom: 8px;
+  margin-bottom: 4px;
+}
+
+.mbcdi-bottomsheet__search-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--mbcdi-bs-border);
+  border-radius: 10px;
+  font-size: 16px;
+  color: var(--mbcdi-bs-text-primary);
+  background: var(--mbcdi-bs-bg);
+  transition: border-color 150ms ease;
+}
+
+.mbcdi-bottomsheet__search-input:focus {
+  outline: none;
+  border-color: var(--mbcdi-bs-accent);
+}
+
+.mbcdi-bottomsheet__search-input::placeholder {
+  color: var(--mbcdi-bs-text-secondary);
+}
+
+/* Cards commerces */
+.mbcdi-bottomsheet__card {
+  display: block;
+  padding: 14px 16px;
+  border: 1px solid var(--mbcdi-bs-border);
+  border-radius: 12px;
+  background: var(--mbcdi-bs-bg);
+  cursor: pointer;
+  transition: all 150ms ease;
+  text-decoration: none;
+  color: inherit;
+
+  /* Touch targets >= 44px */
+  min-height: 44px;
+
+  /* Disable text selection on tap */
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mbcdi-bottomsheet__card:hover {
+  background: var(--mbcdi-bs-hover);
+  border-color: var(--mbcdi-bs-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.mbcdi-bottomsheet__card:active {
+  transform: translateY(0);
+  background: var(--mbcdi-bs-active);
+}
+
+.mbcdi-bottomsheet__card-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--mbcdi-bs-text-primary);
+  margin: 0 0 4px 0;
+  line-height: 1.3;
+}
+
+.mbcdi-bottomsheet__card-address {
+  font-size: 14px;
+  color: var(--mbcdi-bs-text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.mbcdi-bottomsheet__card-distance {
+  font-size: 13px;
+  color: var(--mbcdi-bs-accent);
+  margin: 6px 0 0 0;
+  font-weight: 500;
+}
+
+/* État vide */
+.mbcdi-bottomsheet__empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--mbcdi-bs-text-secondary);
+  font-size: 15px;
+}
+
+/* ========================================
+   VUE DÉTAIL
+   ======================================== */
+
+.mbcdi-bottomsheet__detail {
+  padding: var(--mbcdi-bs-padding);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Masque le détail quand en vue liste */
+.mbcdi-bottomsheet[data-view="list"] .mbcdi-bottomsheet__detail {
+  display: none;
+}
+
+/* Header du détail */
+.mbcdi-bottomsheet__detail-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mbcdi-bottomsheet__detail-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--mbcdi-bs-text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.mbcdi-bottomsheet__detail-address {
+  font-size: 15px;
+  color: var(--mbcdi-bs-text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Boutons d'action */
+.mbcdi-bottomsheet__detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mbcdi-bottomsheet__action-btn {
+  flex: 1;
+  min-width: 100px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  background: var(--mbcdi-bs-accent);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 150ms ease;
+
+  /* Touch targets */
+  min-height: 44px;
+
+  /* Centre le texte */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  /* Disable selection */
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mbcdi-bottomsheet__action-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+.mbcdi-bottomsheet__action-btn:active {
+  transform: translateY(0);
+  opacity: 0.8;
+}
+
+.mbcdi-bottomsheet__action-btn--secondary {
+  background: var(--mbcdi-bs-hover);
+  color: var(--mbcdi-bs-accent);
+}
+
+.mbcdi-bottomsheet__action-btn--secondary:hover {
+  background: var(--mbcdi-bs-active);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Sections du détail */
+.mbcdi-bottomsheet__detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mbcdi-bottomsheet__detail-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mbcdi-bs-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.mbcdi-bottomsheet__detail-section-content {
+  font-size: 15px;
+  color: var(--mbcdi-bs-text-primary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Horaires */
+.mbcdi-bottomsheet__hours {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mbcdi-bottomsheet__hours-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.mbcdi-bottomsheet__hours-day {
+  font-weight: 500;
+  color: var(--mbcdi-bs-text-primary);
+}
+
+.mbcdi-bottomsheet__hours-time {
+  color: var(--mbcdi-bs-text-secondary);
+}
+
+/* Infos avec icônes */
+.mbcdi-bottomsheet__info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mbcdi-bottomsheet__info-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--mbcdi-bs-text-primary);
+}
+
+.mbcdi-bottomsheet__info-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--mbcdi-bs-accent);
+}
+
+/* ========================================
+   BODY SCROLL LOCK (appliqué par JS)
+   ======================================== */
+
+body.mbcdi-bottomsheet-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+/* Tablettes */
+@media screen and (min-width: 768px) {
+  :root {
+    --mbcdi-bs-peek-height: 30vh;
+    --mbcdi-bs-open-height: 85vh;
+    --mbcdi-bs-padding: 20px;
+  }
+
+  .mbcdi-bottomsheet {
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 600px;
+    border-radius: var(--mbcdi-bs-radius);
+    bottom: 20px;
+  }
+
+  .mbcdi-bottomsheet[data-state="closed"] {
+    transform: translate(-50%, 100%);
+  }
+
+  .mbcdi-bottomsheet[data-state="peek"],
+  .mbcdi-bottomsheet[data-state="open"] {
+    transform: translateX(-50%);
+  }
+}
+
+/* Desktop */
+@media screen and (min-width: 1024px) {
+  :root {
+    --mbcdi-bs-peek-height: 40vh;
+    --mbcdi-bs-open-height: 80vh;
+  }
+
+  .mbcdi-bottomsheet__card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* Support des svh/dvh pour iOS */
+@supports (height: 100svh) {
+  .mbcdi-bottomsheet {
+    max-height: 100svh;
+  }
+}
+
+@supports (height: 100dvh) {
+  :root {
+    --mbcdi-bs-open-height: 92dvh;
+  }
+}
+
+/* ========================================
+   ACCESSIBILITÉ
+   ======================================== */
+
+/* Focus visible pour clavier */
+.mbcdi-bottomsheet__card:focus-visible,
+.mbcdi-bottomsheet__action-btn:focus-visible {
+  outline: 2px solid var(--mbcdi-bs-accent);
+  outline-offset: 2px;
+}
+
+/* Réduit les animations si préférences utilisateur */
+@media (prefers-reduced-motion: reduce) {
+  .mbcdi-bottomsheet,
+  .mbcdi-bottomsheet__card,
+  .mbcdi-bottomsheet__action-btn,
+  .mbcdi-bottomsheet__header-btn {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .mbcdi-bottomsheet {
+    border: 2px solid var(--mbcdi-bs-text-primary);
+  }
+
+  .mbcdi-bottomsheet__card {
+    border-width: 2px;
+  }
+}
+
+/* ========================================
+   UTILITAIRES
+   ======================================== */
+
+/* Classe helper pour masquer visuellement mais garder pour screen readers */
+.mbcdi-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
