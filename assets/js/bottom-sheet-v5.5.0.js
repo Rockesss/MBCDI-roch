@@ -218,13 +218,6 @@
     function renderRouteDetail(commerce) {
         return renderRouteMini(commerce);
     }
-                <span class="mbcdi-bs-btn-text">Arrêter</span>
-            </button>
-        </div>`;
-        
-        html += '</div>';
-        return html;
-    }
 
     // Export
     window.MBCDI_BottomSheet = {
