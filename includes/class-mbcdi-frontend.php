@@ -3,7 +3,7 @@
  * MBCDI Frontend
  * Rendu de la carte interactive et gestion des assets frontend
  * @package MBCDI
- * @version 5.5.2
+ * @version 5.5.3
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -437,15 +437,14 @@ class MBCDI_Frontend {
         $uid = wp_generate_uuid4();
         $var = 'MBCDI_DATA_' . str_replace( '-', '_', $uid );
 
-        // Partager les données avec les deux systèmes (legacy et ES6)
+        // Partager les données avec le système legacy
         wp_localize_script( 'mbcdi-frontend', $var, $data );
-        wp_localize_script( 'mbcdi-frontend-main', $var, $data );
 
         // Initialiser le système legacy
         wp_add_inline_script( 'mbcdi-frontend', "document.addEventListener('DOMContentLoaded',function(){if(window.MBCDI){MBCDI.init('{$uid}','{$var}');}});" );
 
-        // Initialiser le système modulaire ES6 (pour la rotation et fonctionnalités v5.5+)
-        wp_add_inline_script( 'mbcdi-frontend-main', "document.addEventListener('DOMContentLoaded',function(){if(window.MBCDI_Modular){MBCDI_Modular.init('{$uid}','{$var}');}});" );
+        // NOTE: frontend-main.js est chargé mais NON initialisé automatiquement pour éviter conflit
+        // Ses modules (rotation, etc.) sont disponibles pour le système legacy via window.MBCDI_Modular.modules
 
         $defaultMode = $settings['routing_default_profile'] ?? 'foot';
         $modeLabels = [ 'foot' => 'Piéton', 'bike' => 'Vélo', 'car' => 'Voiture' ];

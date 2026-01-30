@@ -334,6 +334,21 @@
                     maxZoom: 19
                 }).addTo(state.map);
 
+                // Initialiser le contrôle de rotation (v5.5.2)
+                if (typeof state.map.setBearing === 'function' && window.MBCDI_Modular && window.MBCDI_Modular.modules && window.MBCDI_Modular.modules.rotation) {
+                    try {
+                        state.rotationControl = window.MBCDI_Modular.modules.rotation.createRotationControl(state.map, {
+                            position: 'topright',
+                            onRotate: function(bearing) {
+                                mbcdiDebug('[MBCDI] Rotation manuelle:', bearing, '°');
+                            }
+                        });
+                        mbcdiDebug('[MBCDI v5.5.2] Contrôle de rotation ajouté');
+                    } catch (rotErr) {
+                        console.warn('[MBCDI v5.5.2] Erreur création contrôle rotation:', rotErr);
+                    }
+                }
+
                 state.map.on('zoomend', function() {
                     updatePictoSizes();
                 });
