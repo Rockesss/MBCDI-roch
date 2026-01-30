@@ -3,7 +3,7 @@
  * MBCDI Frontend
  * Rendu de la carte interactive et gestion des assets frontend
  * @package MBCDI
- * @version 5.5.6
+ * @version 5.5.7
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;

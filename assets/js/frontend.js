@@ -1740,11 +1740,21 @@
                     });
                 }
 
-                // Réafficher tous les commerces
+                // Réafficher tous les commerces (v5.5.6)
                 if (state.commerceClusterGroup) {
+                    // Remettre l'opacité à tous les markers
                     state.commerceClusterGroup.eachLayer(function(layer) {
                         layer.setOpacity(1);
                     });
+                    // Rajouter le cluster à la carte s'il a été retiré
+                    if (state.map && !state.map.hasLayer(state.commerceClusterGroup)) {
+                        try {
+                            state.map.addLayer(state.commerceClusterGroup);
+                            mbcdiDebug('[MBCDI v5.5.6] Cluster commerces réaffiché');
+                        } catch (e) {
+                            console.warn('[MBCDI v5.5.6] Erreur réaffichage cluster:', e);
+                        }
+                    }
                 }
 
                 mbcdiDebug('[MBCDI] Tous les points et commerces réaffichés');
@@ -1949,6 +1959,16 @@
                             state.map.fitBounds(allBounds, { padding: [80, 120] });
                         } else if (state.routeLayer) {
                             state.map.fitBounds(state.routeLayer.getBounds(), { padding: [80, 120] });
+                        }
+
+                        // Masquer le cluster des commerces pendant l'affichage de l'itinéraire (v5.5.6)
+                        if (state.commerceClusterGroup && state.map.hasLayer(state.commerceClusterGroup)) {
+                            try {
+                                state.map.removeLayer(state.commerceClusterGroup);
+                                mbcdiDebug('[MBCDI v5.5.6] Cluster commerces masqué pendant itinéraire');
+                            } catch (e) {
+                                console.warn('[MBCDI v5.5.6] Erreur masquage cluster:', e);
+                            }
                         }
 
                         // Masquer les points de départ et zones de livraison non utilisés
