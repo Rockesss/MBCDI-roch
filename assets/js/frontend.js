@@ -365,13 +365,24 @@
                             lat: e.detail.userLat,
                             lng: e.detail.userLng
                         };
-                        mbcdiDebug('[MBCDI v5.5.6] state.userPosition mis à jour depuis géoloc silencieuse:', state.userPosition);
+                        mbcdiDebug('[MBCDI v5.5.7] state.userPosition mis à jour depuis géoloc silencieuse:', state.userPosition);
 
                         // Sélectionner automatiquement "Ma position" dans le champ point de départ
                         var selectStart = app.querySelector('.mbcdi-input-start');
                         if (selectStart) {
                             selectStart.value = 'geoloc';
-                            mbcdiDebug('[MBCDI v5.5.6] Point de départ auto-sélectionné: Ma position');
+                            mbcdiDebug('[MBCDI v5.5.7] Point de départ auto-sélectionné: Ma position');
+
+                            // Déclencher l'événement change pour que l'UI se mette à jour
+                            var changeEvent = new Event('change', { bubbles: true });
+                            selectStart.dispatchEvent(changeEvent);
+                        }
+
+                        // Déplier la barre de recherche pour montrer la sélection
+                        if (!app.classList.contains('expanded')) {
+                            app.classList.add('expanded');
+                            state.isExpanded = true;
+                            mbcdiDebug('[MBCDI v5.5.7] Barre de recherche dépliée pour montrer la sélection');
                         }
                     }
                 });
