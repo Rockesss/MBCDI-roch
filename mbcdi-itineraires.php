@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: MBCDI - Itinéraires V5.5.7
- * Description: Gestion d'itinéraires par zones de livraison. Bottom sheet + rotation fonctionnels.
- * Version: 5.5.7
+ * Plugin Name: MBCDI - Itinéraires V5.5.8
+ * Description: Gestion d'itinéraires par zones de livraison. Bottom sheet v5.5.8 - Résolution conflits legacy/modal.
+ * Version: 5.5.8
  * Author: Roch de Dinechin
  * Text Domain: mbcdi
  * Requires PHP: 8.0
@@ -13,8 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-// Version plugin: 5.5.7
-define( 'MBCDI_VERSION', '5.5.7' );
+// Version plugin: 5.5.8
+define( 'MBCDI_VERSION', '5.5.8' );
 define( 'MBCDI_PLUGIN_FILE', __FILE__ );
 define( 'MBCDI_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'MBCDI_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
