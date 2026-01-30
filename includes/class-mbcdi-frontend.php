@@ -3,7 +3,7 @@
  * MBCDI Frontend
  * Rendu de la carte interactive et gestion des assets frontend
  * @package MBCDI
- * @version 5.5.3
+ * @version 5.5.4
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -31,9 +31,9 @@ class MBCDI_Frontend {
         wp_register_style( 'leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', [], '1.9.4' );
         wp_register_script( 'leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', [], '1.9.4', true );
 
-        // Leaflet.Rotate - Support rotation de carte
-        wp_register_style( 'leaflet-rotate', 'https://unpkg.com/@raruto/leaflet-rotate@0.2/dist/leaflet-rotate.css', [ 'leaflet' ], '0.2' );
-        wp_register_script( 'leaflet-rotate', 'https://unpkg.com/@raruto/leaflet-rotate@0.2/dist/leaflet-rotate.js', [ 'leaflet' ], '0.2', true );
+        // Leaflet.Rotate - DÉSACTIVÉ temporairement (CORB)
+        // wp_register_style( 'leaflet-rotate', 'https://unpkg.com/@raruto/leaflet-rotate@0.2/dist/leaflet-rotate.css', [ 'leaflet' ], '0.2' );
+        // wp_register_script( 'leaflet-rotate', 'https://unpkg.com/@raruto/leaflet-rotate@0.2/dist/leaflet-rotate.js', [ 'leaflet' ], '0.2', true );
 
         // Nouveaux fichiers CSS v5.3.0 - Architecture modernisée
         wp_register_style(
@@ -57,11 +57,11 @@ class MBCDI_Frontend {
             MBCDI_VERSION
         );
 
-        // Styles de rotation de carte (v5.5.0)
+        // Styles de rotation de carte (v5.5.0) - dépendance leaflet-rotate DÉSACTIVÉE
         wp_register_style(
             'mbcdi-frontend-rotation',
             MBCDI_PLUGIN_URL . 'assets/css/frontend-rotation.css',
-            [ 'leaflet-rotate' ],
+            [ 'leaflet' ],
             MBCDI_VERSION
         );
 
@@ -121,11 +121,11 @@ class MBCDI_Frontend {
 
         wp_register_script( 'mbcdi-frontend', MBCDI_PLUGIN_URL . 'assets/js/frontend.js', [ 'leaflet', 'mbcdi-frontend-patch', 'mbcdi-frontend-patch-v5' ], MBCDI_VERSION, true );
 
-        // Frontend Main - Point d'entrée modulaire ES6 (v5.4.0)
+        // Frontend Main - Point d'entrée modulaire ES6 (v5.4.0) - leaflet-rotate DÉSACTIVÉ
         wp_register_script(
             'mbcdi-frontend-main',
             MBCDI_PLUGIN_URL . 'assets/js/frontend-main.js',
-            [ 'leaflet', 'leaflet-rotate', 'leaflet-markercluster' ],
+            [ 'leaflet', 'leaflet-markercluster' ],
             MBCDI_VERSION,
             true
         );
@@ -213,9 +213,9 @@ class MBCDI_Frontend {
         wp_enqueue_style( 'leaflet' );
         wp_enqueue_script( 'leaflet' );
 
-        // Leaflet.Rotate pour rotation de carte
-        wp_enqueue_style( 'leaflet-rotate' );
-        wp_enqueue_script( 'leaflet-rotate' );
+        // Leaflet.Rotate DÉSACTIVÉ (CORB) - À réactiver avec version locale
+        // wp_enqueue_style( 'leaflet-rotate' );
+        // wp_enqueue_script( 'leaflet-rotate' );
 
         // ========================================================================
         // ARCHITECTURE CSS v5.5.1
