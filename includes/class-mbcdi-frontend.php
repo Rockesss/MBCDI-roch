@@ -3,7 +3,7 @@
  * MBCDI Frontend
  * Rendu de la carte interactive et gestion des assets frontend
  * @package MBCDI
- * @version 5.5.1
+ * @version 5.5.2
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -81,11 +81,11 @@ class MBCDI_Frontend {
         wp_register_script(
             'mbcdi-bottom-sheet-v5',
             MBCDI_PLUGIN_URL . 'assets/js/bottom-sheet-v5.5.0.js',
-            [],
+            [ 'leaflet' ],
             MBCDI_VERSION,
             true
         );
-        
+
         wp_register_script(
             'mbcdi-bottom-sheet-manager-v5',
             MBCDI_PLUGIN_URL . 'assets/js/bottom-sheet-manager-v5.5.0.js',
@@ -93,11 +93,11 @@ class MBCDI_Frontend {
             MBCDI_VERSION,
             true
         );
-        
+
         wp_register_script(
             'mbcdi-integration-v5',
             MBCDI_PLUGIN_URL . 'assets/js/integration-v5.5.0.js',
-            [ 'mbcdi-bottom-sheet-manager-v5' ],
+            [ 'mbcdi-bottom-sheet-manager-v5', 'mbcdi-frontend' ],
             MBCDI_VERSION,
             true
         );
@@ -249,22 +249,26 @@ class MBCDI_Frontend {
         wp_enqueue_script( 'mbcdi-smart-location' );
         wp_enqueue_script( 'mbcdi-autocomplete' );
 
-        // SYSTÈME HYBRIDE v5.4.0 :
-        // - frontend.js : Legacy (fallback pour navigateurs anciens)
-        // - frontend-main.js : Modules ES6 (navigateurs modernes)
-        // Les deux peuvent coexister, frontend-main.js prend le relai si supporté
-        
-        wp_enqueue_script( 'mbcdi-frontend' ); // Legacy
-        wp_enqueue_script( 'mbcdi-frontend-main' ); // ES6 Modules
+        // ========================================================================
+        // SYSTÈME HYBRIDE v5.5.1
+        // ========================================================================
+        // Ordre de chargement optimisé :
+        // 1. Scripts legacy (frontend.js + integration.js)
+        // 2. Bottom sheet v5.5.0 (nouveau système)
+        // 3. Modules ES6 (frontend-main.js) pour rotation et fonctionnalités modernes
+        // 4. Integration v5.5.0 (connecte bottom sheet au système principal)
 
-        // Integration APRÈS frontend.js (important pour l'ordre)
-        wp_enqueue_script( 'mbcdi-integration' );
-        
-        // ========================================================================
-        // BOTTOM SHEET V5.5.0 - Scripts seulement (CSS déjà chargé plus haut)
-        // ========================================================================
+        wp_enqueue_script( 'mbcdi-frontend' ); // Legacy
+        wp_enqueue_script( 'mbcdi-integration' ); // Legacy integration
+
+        // Bottom Sheet v5.5.0 (dépend de leaflet + frontend)
         wp_enqueue_script( 'mbcdi-bottom-sheet-v5' );
         wp_enqueue_script( 'mbcdi-bottom-sheet-manager-v5' );
+
+        // ES6 Modules (rotation + features modernes)
+        wp_enqueue_script( 'mbcdi-frontend-main' );
+
+        // Integration v5.5.0 (connecte bottom sheet, dépend de bottom-sheet-manager + frontend)
         wp_enqueue_script( 'mbcdi-integration-v5' );
     }
 
@@ -433,8 +437,15 @@ class MBCDI_Frontend {
         $uid = wp_generate_uuid4();
         $var = 'MBCDI_DATA_' . str_replace( '-', '_', $uid );
 
+        // Partager les données avec les deux systèmes (legacy et ES6)
         wp_localize_script( 'mbcdi-frontend', $var, $data );
+        wp_localize_script( 'mbcdi-frontend-main', $var, $data );
+
+        // Initialiser le système legacy
         wp_add_inline_script( 'mbcdi-frontend', "document.addEventListener('DOMContentLoaded',function(){if(window.MBCDI){MBCDI.init('{$uid}','{$var}');}});" );
+
+        // Initialiser le système modulaire ES6 (pour la rotation et fonctionnalités v5.5+)
+        wp_add_inline_script( 'mbcdi-frontend-main', "document.addEventListener('DOMContentLoaded',function(){if(window.MBCDI_Modular){MBCDI_Modular.init('{$uid}','{$var}');}});" );
 
         $defaultMode = $settings['routing_default_profile'] ?? 'foot';
         $modeLabels = [ 'foot' => 'Piéton', 'bike' => 'Vélo', 'car' => 'Voiture' ];
