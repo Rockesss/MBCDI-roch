@@ -1,7 +1,8 @@
 /**
- * MBCDI Bottom Sheet v5.5.1
+ * MBCDI Bottom Sheet v5.5.8
  * Système de bottom sheet avec 4 états selon maquette
- * @version 5.5.1
+ * Titre "Trajet en cours" avec animation
+ * @version 5.5.8
  */
 
 (function() {
@@ -152,15 +153,22 @@
 
         let html = '<div class="mbcdi-bs-detail">';
 
-        // Logo + Trajet en cours
+        // Titre "Trajet en cours" au même emplacement que "Commerces à proximité" (v5.5.8)
+        html += '<h2 class="mbcdi-bs-list-title mbcdi-bs-route-title">';
+        html += '<span class="mbcdi-bs-route-icon-animated">';
+        html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mbcdi-bs-navigation-pulse">';
+        html += '<circle cx="12" cy="12" r="10"/>';
+        html += '<polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>';
+        html += '</svg>';
+        html += '</span>';
+        html += 'Trajet en cours';
+        html += '</h2>';
+
+        // Logo + infos commerce
         html += '<div class="mbcdi-bs-detail-header">';
         if (logoHtml) {
             html += `<div class="mbcdi-bs-detail-logo-wrapper">${logoHtml}</div>`;
         }
-        html += '<div class="mbcdi-bs-route-status">';
-        html += `<span class="mbcdi-bs-icon">${ICONS.navigation}</span>`;
-        html += '<span class="mbcdi-bs-route-label">Trajet en cours</span>';
-        html += '</div>';
         html += '</div>';
 
         // Nom + adresse
