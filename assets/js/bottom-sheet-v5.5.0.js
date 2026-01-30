@@ -143,100 +143,81 @@
     }
 
     /**
-     * ÉTAT 3 : TRAJET MINI
+     * ÉTAT 3 : TRAJET MINI (même design que détail + indication trajet)
      */
     function renderRouteMini(commerce) {
-        let html = '<div class="mbcdi-bs-route-mini">';
-        
-        html += '<div class="mbcdi-bs-route-status">';
-        html += '<p class="mbcdi-bs-route-label">Trajet en cours</p>';
-        html += '<div class="mbcdi-bs-route-animation">';
-        html += '<div class="mbcdi-bs-route-line"></div>';
-        html += '</div>';
-        html += '</div>';
-        
-        html += '<div class="mbcdi-bs-route-mini-info">';
-        html += `<h3 class="mbcdi-bs-route-mini-name">${escapeHtml(commerce.name)}</h3>`;
-        html += `<p class="mbcdi-bs-route-mini-address">${escapeHtml(commerce.address || '')}</p>`;
-        html += '</div>';
-        
-        html += '<div class="mbcdi-bs-route-mini-actions">';
-        html += `<button type="button" class="mbcdi-bs-btn mbcdi-bs-btn-secondary mbcdi-bs-btn-view">
-            <span class="mbcdi-bs-btn-icon">${ICONS.eye}</span>
-            <span class="mbcdi-bs-btn-text">Voir</span>
-        </button>`;
-        html += `<button type="button" class="mbcdi-bs-btn mbcdi-bs-btn-danger mbcdi-bs-btn-stop">
-            <span class="mbcdi-bs-btn-icon">${ICONS.close}</span>
-            <span class="mbcdi-bs-btn-text">Arrêter</span>
-        </button>`;
-        html += '</div>';
-        
-        html += '</div>';
-        return html;
-    }
-
-    /**
-     * ÉTAT 4 : TRAJET DÉTAIL
-     */
-    function renderRouteDetail(commerce) {
-        const logoHtml = commerce.logoUrl 
+        const logoHtml = commerce.logoUrl
             ? `<img src="${escapeHtml(commerce.logoUrl)}" alt="Logo ${escapeHtml(commerce.name)}" class="mbcdi-bs-detail-logo" />`
-            : '<div class="mbcdi-bs-detail-logo mbcdi-bs-detail-logo-placeholder">🏪</div>';
-        
-        let html = '<div class="mbcdi-bs-route-detail">';
-        
-        html += `<div class="mbcdi-bs-detail-logo-wrapper">${logoHtml}</div>`;
-        html += `<h2 class="mbcdi-bs-detail-name">${escapeHtml(commerce.name)}</h2>`;
-        html += `<p class="mbcdi-bs-detail-address">
-            <span class="mbcdi-bs-icon">${ICONS.mapPin}</span>
-            <span>${escapeHtml(commerce.address || '')}</span>
-        </p>`;
-        
+            : '';
+
+        let html = '<div class="mbcdi-bs-detail">';
+
+        // Logo + Trajet en cours
+        html += '<div class="mbcdi-bs-detail-header">';
+        if (logoHtml) {
+            html += `<div class="mbcdi-bs-detail-logo-wrapper">${logoHtml}</div>`;
+        }
         html += '<div class="mbcdi-bs-route-status">';
-        html += '<p class="mbcdi-bs-route-label">Trajet en cours</p>';
-        html += '<div class="mbcdi-bs-route-animation">';
-        html += '<div class="mbcdi-bs-route-line"></div>';
+        html += `<span class="mbcdi-bs-icon">${ICONS.navigation}</span>`;
+        html += '<span class="mbcdi-bs-route-label">Trajet en cours</span>';
         html += '</div>';
         html += '</div>';
-        
-        html += '<div class="mbcdi-bs-detail-infos">';
-        
+
+        // Nom + adresse
+        html += `<h2 class="mbcdi-bs-detail-name">${escapeHtml(commerce.name)}</h2>`;
+        html += `<p class="mbcdi-bs-detail-address">${escapeHtml(commerce.address || '')}</p>`;
+
+        // Infos contact
+        html += '<div class="mbcdi-bs-detail-info">';
+
         if (commerce.hours) {
             html += `<div class="mbcdi-bs-detail-info-row">
                 <span class="mbcdi-bs-icon">${ICONS.clock}</span>
                 <span>${escapeHtml(commerce.hours)}</span>
             </div>`;
         }
-        
+
         if (commerce.phone) {
             html += `<div class="mbcdi-bs-detail-info-row">
                 <span class="mbcdi-bs-icon">${ICONS.phone}</span>
                 <a href="tel:${escapeHtml(commerce.phone)}" class="mbcdi-bs-link">${escapeHtml(commerce.phone)}</a>
             </div>`;
         }
-        
+
         if (commerce.website) {
             html += `<div class="mbcdi-bs-detail-info-row">
                 <span class="mbcdi-bs-icon">${ICONS.globe}</span>
                 <a href="${escapeHtml(commerce.website)}" target="_blank" rel="noopener" class="mbcdi-bs-link">${escapeHtml(commerce.website)}</a>
             </div>`;
         }
-        
+
         html += '</div>';
-        
+
+        // Description
         if (commerce.description || commerce.shortDesc) {
             html += `<div class="mbcdi-bs-detail-description">
                 <p>${escapeHtml(commerce.description || commerce.shortDesc)}</p>
             </div>`;
         }
-        
-        html += `<div class="mbcdi-bs-route-detail-actions">
-            <button type="button" class="mbcdi-bs-btn mbcdi-bs-btn-secondary mbcdi-bs-btn-back-to-mini">
-                <span class="mbcdi-bs-btn-icon">${ICONS.arrowLeft}</span>
-                <span class="mbcdi-bs-btn-text">Retour</span>
-            </button>
-            <button type="button" class="mbcdi-bs-btn mbcdi-bs-btn-danger mbcdi-bs-btn-stop">
-                <span class="mbcdi-bs-btn-icon">${ICONS.close}</span>
+
+        // Actions
+        html += '<div class="mbcdi-bs-detail-actions">';
+        html += `<button type="button" class="mbcdi-bs-btn mbcdi-bs-btn-danger mbcdi-bs-btn-stop">
+            <span class="mbcdi-bs-btn-icon">${ICONS.close}</span>
+            <span class="mbcdi-bs-btn-text">Arrêter</span>
+        </button>`;
+        html += '</div>';
+
+        html += '</div>';
+        return html;
+    }
+
+    /**
+     * ÉTAT 4 : TRAJET DÉTAIL (identique à mini, c'est le même design maintenant)
+     */
+    function renderRouteDetail(commerce) {
+        return renderRouteMini(commerce);
+    }
                 <span class="mbcdi-bs-btn-text">Arrêter</span>
             </button>
         </div>`;
