@@ -475,6 +475,12 @@
                 }, 300); // Petit délai pour l'animation de déploiement
             });
 
+            // === ÉCOUTE DE L'ÉVÉNEMENT "RESET ROUTE" (v5.5.0) ===
+            window.addEventListener('mbcdi:resetRoute', function() {
+                mbcdiDebug('[MBCDI v5.5.0] Événement resetRoute reçu');
+                resetRoute();
+            });
+
             // === MODALE DE LOCALISATION ET LISTE DES COMMERCES V4.9.81 ===
             
             var locationModal = app.querySelector('#mbcdi-location-modal');
@@ -1739,6 +1745,19 @@
                     state.walkingLineLayer = null;
                 }
 
+                // Réinitialiser la rotation de la carte (v5.5.0)
+                if (typeof state.map.setBearing === 'function' && window.MBCDI_Modular && window.MBCDI_Modular.modules && window.MBCDI_Modular.modules.rotation) {
+                    try {
+                        window.MBCDI_Modular.modules.rotation.resetRotation(state.map, {
+                            animate: true,
+                            duration: 800
+                        });
+                        mbcdiDebug('[MBCDI v5.5.0] Rotation réinitialisée vers le Nord');
+                    } catch (rotErr) {
+                        console.warn('[MBCDI v5.5.0] Erreur réinitialisation rotation:', rotErr);
+                    }
+                }
+
                 // Réafficher tous les points et commerces
                 showAllRoutePoints();
 
@@ -1852,6 +1871,19 @@
                                 }).addTo(state.map);
 
                                 mbcdiDebug(' v5.0.6] Tracé véhicule affiché:', vehicleCoords.length, 'points');
+
+                                // Rotation automatique de la carte vers l'itinéraire (v5.5.0)
+                                if (typeof state.map.setBearing === 'function' && vehicleCoords.length >= 2 && window.MBCDI_Modular && window.MBCDI_Modular.modules && window.MBCDI_Modular.modules.rotation) {
+                                    try {
+                                        var bearing = window.MBCDI_Modular.modules.rotation.rotateToRoute(state.map, vehicleCoords, {
+                                            animate: true,
+                                            duration: 1200
+                                        });
+                                        mbcdiDebug('[MBCDI v5.5.0] Rotation automatique appliquée:', bearing, '°');
+                                    } catch (rotErr) {
+                                        console.warn('[MBCDI v5.5.0] Erreur rotation automatique:', rotErr);
+                                    }
+                                }
                             }
                         }
 

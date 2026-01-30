@@ -30,7 +30,11 @@ class MBCDI_Frontend {
     public static function register_assets(): void {
         wp_register_style( 'leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', [], '1.9.4' );
         wp_register_script( 'leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', [], '1.9.4', true );
-        
+
+        // Leaflet.Rotate - Support rotation de carte
+        wp_register_style( 'leaflet-rotate', 'https://unpkg.com/@raruto/leaflet-rotate@0.2/dist/leaflet-rotate.css', [ 'leaflet' ], '0.2' );
+        wp_register_script( 'leaflet-rotate', 'https://unpkg.com/@raruto/leaflet-rotate@0.2/dist/leaflet-rotate.js', [ 'leaflet' ], '0.2', true );
+
         // Nouveaux fichiers CSS v5.3.0 - Architecture modernisée
         wp_register_style(
             'mbcdi-frontend-core',
@@ -52,7 +56,15 @@ class MBCDI_Frontend {
             [ 'mbcdi-frontend-components' ],
             MBCDI_VERSION
         );
-        
+
+        // Styles de rotation de carte (v5.5.0)
+        wp_register_style(
+            'mbcdi-frontend-rotation',
+            MBCDI_PLUGIN_URL . 'assets/css/frontend-rotation.css',
+            [ 'leaflet-rotate' ],
+            MBCDI_VERSION
+        );
+
         wp_register_style( 'mbcdi-frontend', MBCDI_PLUGIN_URL . 'assets/css/frontend.css', [ 'mbcdi-frontend-core' ], MBCDI_VERSION );
         
         // ========================================================================
@@ -113,7 +125,7 @@ class MBCDI_Frontend {
         wp_register_script(
             'mbcdi-frontend-main',
             MBCDI_PLUGIN_URL . 'assets/js/frontend-main.js',
-            [ 'leaflet', 'leaflet-markercluster' ],
+            [ 'leaflet', 'leaflet-rotate', 'leaflet-markercluster' ],
             MBCDI_VERSION,
             true
         );
@@ -245,11 +257,16 @@ class MBCDI_Frontend {
         wp_enqueue_style( 'leaflet' );
         wp_enqueue_script( 'leaflet' );
 
+        // Leaflet.Rotate pour rotation de carte
+        wp_enqueue_style( 'leaflet-rotate' );
+        wp_enqueue_script( 'leaflet-rotate' );
+
         // Architecture CSS v5.3.1 - Consolidé
         wp_enqueue_style( 'mbcdi-frontend-core' );       // 1. Variables + reset
         wp_enqueue_style( 'mbcdi-frontend-components' ); // 2. Composants (CONSOLIDÉ 6 fichiers)
         wp_enqueue_style( 'mbcdi-frontend' );            // 3. Styles Leaflet
-        wp_enqueue_style( 'mbcdi-frontend-responsive' ); // 4. Media queries (dernier)
+        wp_enqueue_style( 'mbcdi-frontend-rotation' );   // 4. Styles rotation (v5.5.0)
+        wp_enqueue_style( 'mbcdi-frontend-responsive' ); // 5. Media queries (dernier)
 
         wp_enqueue_style( 'leaflet-markercluster' );
         wp_enqueue_style( 'leaflet-markercluster-default' );
