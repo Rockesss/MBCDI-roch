@@ -1,6 +1,6 @@
 /**
- * MBCDI Bottom Sheet v5.5.1
- * @version 5.5.1
+ * MBCDI Bottom Sheet v5.5.10
+ * @version 5.5.10
  */
 
 /* Bottom sheet base */
@@ -557,6 +557,62 @@
    ÉTAT 2 : DÉTAIL COMMERCE V2 - v5.5.9
    ======================================== */
 
+/* Bouton Retour en haut à gauche */
+.mbcdi-bs-btn-back {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F6F6F6;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.mbcdi-bs-btn-back:hover {
+    background: #E5E5EA;
+    transform: scale(1.05);
+}
+
+.mbcdi-bs-btn-back:active {
+    transform: scale(0.95);
+}
+
+.mbcdi-bs-btn-back .mbcdi-bs-btn-icon {
+    width: 20px;
+    height: 20px;
+    color: #1D1D1F;
+}
+
+/* Logo centré au-dessus du titre */
+.mbcdi-bs-detail-logo-wrapper-centered {
+    display: flex;
+    justify-content: center;
+    padding: 56px 16px 16px 16px;
+}
+
+.mbcdi-bs-detail-logo-centered {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mbcdi-bs-detail-logo-centered.mbcdi-bs-detail-logo-placeholder {
+    background: #F2F2F7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+}
+
 /* Titre centré */
 .mbcdi-bs-detail-title-centered {
     text-align: center;
@@ -564,7 +620,7 @@
     font-weight: 700;
     color: #000;
     margin: 0 0 8px 0;
-    padding: 16px 16px 0 16px;
+    padding: 0 16px;
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
 }
 
@@ -717,6 +773,14 @@
 .mbcdi-bs-route-status-section {
     background: #F2F2F7;
     border-top: none;
+}
+
+/* Section "TRAJET EN COURS" pour État 3 (mini) */
+.mbcdi-bs-route-status-section-mini {
+    background: #F2F2F7;
+    border-top: none;
+    margin: 0;
+    padding: 12px 16px;
 }
 
 /* Animation Lottie - ligne qui bouge */

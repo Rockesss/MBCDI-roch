@@ -1,8 +1,8 @@
 /**
- * MBCDI Bottom Sheet v5.5.9
+ * MBCDI Bottom Sheet v5.5.10
  * Système de bottom sheet avec 4 états selon maquette
- * États 2 & 4 redesignés : fiches commerce avec sections, boutons côte à côte, animation trajet
- * @version 5.5.9
+ * États 2 & 3 corrigés : logo centré, bouton retour, texte "Choisir", animation Lottie dans État 3
+ * @version 5.5.10
  */
 
 (function() {
@@ -82,10 +82,22 @@
 
     /**
      * ÉTAT 2 : DÉTAIL COMMERCE (sans itinéraire)
-     * Maquette v5.5.9: Titre centré, boutons Appeler/Site web, sections DESCRIPTION/HORAIRES
+     * Maquette v5.5.9: Logo centré, bouton Retour, titre centré, boutons Appeler/Site web, sections DESCRIPTION/HORAIRES
      */
     function renderCommerceDetail(commerce) {
         let html = '<div class="mbcdi-bs-detail mbcdi-bs-detail-v2">';
+
+        // Bouton Retour en haut à gauche
+        html += '<button type="button" class="mbcdi-bs-btn-back" onclick="window.MBCDI_BSManager && window.MBCDI_BSManager.collapse()">';
+        html += `<span class="mbcdi-bs-btn-icon">${ICONS.arrowLeft}</span>`;
+        html += '</button>';
+
+        // Logo centré au-dessus du titre
+        const logoHtml = commerce.logoUrl
+            ? `<img src="${escapeHtml(commerce.logoUrl)}" alt="Logo ${escapeHtml(commerce.name)}" class="mbcdi-bs-detail-logo-centered" />`
+            : '<div class="mbcdi-bs-detail-logo-centered mbcdi-bs-detail-logo-placeholder">🏪</div>';
+
+        html += `<div class="mbcdi-bs-detail-logo-wrapper-centered">${logoHtml}</div>`;
 
         // Titre centré
         html += `<h2 class="mbcdi-bs-detail-title-centered">${escapeHtml(commerce.name)}</h2>`;
@@ -154,11 +166,11 @@
             html += '</div>';
         }
 
-        // Bouton Y ALLER (pleine largeur)
+        // Bouton CHOISIR (pleine largeur)
         html += '<div class="mbcdi-bs-detail-actions mbcdi-bs-detail-actions-single">';
         html += `<button type="button" class="mbcdi-bs-btn mbcdi-bs-btn-primary mbcdi-bs-btn-goto mbcdi-bs-btn-choose-detail" data-commerce-id="${commerce.id}">
             <span class="mbcdi-bs-btn-icon">${ICONS.navigation}</span>
-            <span class="mbcdi-bs-btn-text">Y aller</span>
+            <span class="mbcdi-bs-btn-text">Choisir</span>
         </button>`;
         html += '</div>';
 
@@ -186,6 +198,14 @@
         html += '</span>';
         html += 'Trajet en cours';
         html += '</h2>';
+
+        // Section "TRAJET EN COURS" avec animation Lottie (barre de progression)
+        html += '<div class="mbcdi-bs-section mbcdi-bs-route-status-section-mini">';
+        html += '<h3 class="mbcdi-bs-section-label">TRAJET EN COURS</h3>';
+        html += '<div class="mbcdi-bs-route-animation">';
+        html += '<div class="mbcdi-bs-route-line"></div>';
+        html += '</div>';
+        html += '</div>';
 
         // Logo + infos commerce
         html += '<div class="mbcdi-bs-detail-header">';
