@@ -1644,6 +1644,18 @@
     box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
 }
 
+/* Variante rouge pour "vous êtes ici" */
+.mbcdi-user-marker-red .mbcdi-pulse-ring {
+    border-color: #FF3B30;
+}
+
+.mbcdi-user-marker-red .mbcdi-marker-icon {
+    border-color: #FF3B30;
+    color: #FF3B30;
+    background: white;
+    box-shadow: 0 4px 12px rgba(255, 59, 48, 0.35);
+}
+
 /* Marqueur sans pulse (après arrêt) */
 .mbcdi-marker-static .mbcdi-pulse-ring {
     animation: none;
