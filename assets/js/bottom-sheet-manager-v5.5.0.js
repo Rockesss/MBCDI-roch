@@ -1,7 +1,7 @@
 /**
- * MBCDI Bottom Sheet Manager v5.5.0
+ * MBCDI Bottom Sheet Manager v5.5.1
  * Gestion de la navigation, handle et états du bottom sheet
- * @version 5.5.0
+ * @version 5.5.1
  */
 
 (function() {

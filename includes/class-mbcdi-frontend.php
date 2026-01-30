@@ -3,7 +3,7 @@
  * MBCDI Frontend
  * Rendu de la carte interactive et gestion des assets frontend
  * @package MBCDI
- * @version 5.4.2
+ * @version 5.5.1
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -261,12 +261,13 @@ class MBCDI_Frontend {
         wp_enqueue_style( 'leaflet-rotate' );
         wp_enqueue_script( 'leaflet-rotate' );
 
-        // Architecture CSS v5.3.1 - Consolidé
+        // Architecture CSS v5.5.1 - Ordre optimisé pour bottom sheet
         wp_enqueue_style( 'mbcdi-frontend-core' );       // 1. Variables + reset
         wp_enqueue_style( 'mbcdi-frontend-components' ); // 2. Composants (CONSOLIDÉ 6 fichiers)
         wp_enqueue_style( 'mbcdi-frontend' );            // 3. Styles Leaflet
         wp_enqueue_style( 'mbcdi-frontend-rotation' );   // 4. Styles rotation (v5.5.0)
-        wp_enqueue_style( 'mbcdi-frontend-responsive' ); // 5. Media queries (dernier)
+        wp_enqueue_style( 'mbcdi-frontend-responsive' ); // 5. Media queries
+        wp_enqueue_style( 'mbcdi-bottom-sheet-v5' );     // 6. Bottom sheet (APRÈS responsive)
 
         wp_enqueue_style( 'leaflet-markercluster' );
         wp_enqueue_style( 'leaflet-markercluster-default' );
@@ -297,9 +298,8 @@ class MBCDI_Frontend {
         wp_enqueue_script( 'mbcdi-integration' );
         
         // ========================================================================
-        // BOTTOM SHEET V5.5.0
+        // BOTTOM SHEET V5.5.0 - Scripts seulement (CSS déjà chargé plus haut)
         // ========================================================================
-        wp_enqueue_style( 'mbcdi-bottom-sheet-v5' );
         wp_enqueue_script( 'mbcdi-bottom-sheet-v5' );
         wp_enqueue_script( 'mbcdi-bottom-sheet-manager-v5' );
         wp_enqueue_script( 'mbcdi-integration-v5' );
