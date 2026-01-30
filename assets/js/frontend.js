@@ -463,17 +463,16 @@
 
                 mbcdiDebug(' v5.2.3] Commerce trouvé:', commerce.name);
 
-                // Fermer le bottom sheet si ouvert
-                if (bottomSheet) {
-                    mbcdiDebug(' v5.2.3] Bottom sheet présent, classes:', bottomSheet.className);
-                    if (bottomSheet.classList.contains('mbcdi-expanded')) {
-                        bottomSheet.classList.remove('mbcdi-expanded');
-                        state.isSheetExpanded = false;
-                        mbcdiDebug(' v5.2.3] Bottom sheet fermé');
-                    }
-                } else {
-                    mbcdiDebug(' v5.2.3] Aucun bottom sheet trouvé');
-                }
+                // DÉSACTIVÉ v5.5.7 - Bottom sheet géré par MBCDI_BSManager
+                // Le collapse automatique est géré par l'observer dans integration-v5.5.0.js
+                // if (bottomSheet) {
+                //     mbcdiDebug(' v5.2.3] Bottom sheet présent, classes:', bottomSheet.className);
+                //     if (bottomSheet.classList.contains('mbcdi-expanded')) {
+                //         bottomSheet.classList.remove('mbcdi-expanded');
+                //         state.isSheetExpanded = false;
+                //         mbcdiDebug(' v5.2.3] Bottom sheet fermé');
+                //     }
+                // }
 
                 // Déplier la barre de recherche
                 if (!app.classList.contains('expanded')) {
@@ -688,13 +687,14 @@
                             // Cas 1: Point de départ défini → Replier le sheet + Afficher l'itinéraire
                             mbcdiDebug('] GO avec point de départ → affichage itinéraire');
                             
-                            // V5.0.3: Replier le bottom sheet pour voir la carte
-                            if (bottomSheet && bottomSheet.classList.contains('mbcdi-expanded')) {
-                                bottomSheet.classList.remove('mbcdi-expanded');
-                                state.isSheetExpanded = false;
-                                mbcdiDebug('] Bottom sheet replié pour afficher la carte');
-                            }
-                            
+                            // DÉSACTIVÉ v5.5.7 - Bottom sheet géré par MBCDI_BSManager
+                            // Le collapse est géré automatiquement dans showRouteMini()
+                            // if (bottomSheet && bottomSheet.classList.contains('mbcdi-expanded')) {
+                            //     bottomSheet.classList.remove('mbcdi-expanded');
+                            //     state.isSheetExpanded = false;
+                            //     mbcdiDebug('] Bottom sheet replié pour afficher la carte');
+                            // }
+
                             // Afficher l'itinéraire
                             selectCommerce(commerceId);
                         } else {
@@ -954,34 +954,28 @@
                 });
             }
 
-            if (sheetHandle) {
-                sheetHandle.addEventListener('click', function() {
-                    state.isSheetExpanded = !state.isSheetExpanded;
-                    if (state.isSheetExpanded) {
-                        bottomSheet.classList.add('mbcdi-expanded');
-                    } else {
-                        bottomSheet.classList.remove('mbcdi-expanded');
-                    }
-                });
-            }
+            // DÉSACTIVÉ v5.5.7 - Handle géré par MBCDI_BSManager
+            // if (sheetHandle) {
+            //     sheetHandle.addEventListener('click', function() {
+            //         state.isSheetExpanded = !state.isSheetExpanded;
+            //         if (state.isSheetExpanded) {
+            //             bottomSheet.classList.add('mbcdi-expanded');
+            //         } else {
+            //             bottomSheet.classList.remove('mbcdi-expanded');
+            //         }
+            //     });
+            // }
 
             // === FONCTIONS ===
 
+            // DÉSACTIVÉ v5.5.7 - Géré par MBCDI_BSManager via événements
             function showBottomSheet() {
-                if (bottomSheet) {
-                    bottomSheet.classList.add('mbcdi-visible');
-                    setTimeout(function() {
-                        bottomSheet.classList.add('mbcdi-expanded');
-                        state.isSheetExpanded = true;
-                    }, 100);
-                }
+                mbcdiDebug('[MBCDI v5.5.7] showBottomSheet désactivé - utiliser MBCDI_BSManager');
             }
 
+            // DÉSACTIVÉ v5.5.7 - Géré par MBCDI_BSManager via événements
             function hideBottomSheet() {
-                if (bottomSheet) {
-                    bottomSheet.classList.remove('mbcdi-visible', 'mbcdi-expanded');
-                    state.isSheetExpanded = false;
-                }
+                mbcdiDebug('[MBCDI v5.5.7] hideBottomSheet désactivé - utiliser MBCDI_BSManager');
             }
 
             function getPictoSize() {
@@ -1073,156 +1067,39 @@
             }
 
             // =========================
-            // V4.9 - Fiche commerce rétractable
+            // V5.5.7 - DÉSACTIVÉ - Utiliser événements pour communiquer avec MBCDI_BSManager
             // =========================
             function showCommerceCard(commerce, expanded) {
-                mbcdiDebug(' showCommerceCard] Début fonction');
-                mbcdiDebug(' showCommerceCard] bottomSheet:', bottomSheet);
-                mbcdiDebug(' showCommerceCard] sheetBody:', sheetBody);
-                mbcdiDebug(' showCommerceCard] commerce:', commerce);
-                
-                if (!bottomSheet || !sheetBody) {
-                    console.error('[MBCDI ERROR] bottomSheet ou sheetBody non trouvé !');
-                    mbcdiDebug('] Recherche dans DOM...');
-                    var foundSheet = document.querySelector('.mbcdi-bottomsheet');
-                    var foundBody = document.querySelector('.mbcdi-bottomsheet-body');
-                    mbcdiDebug('] Trouvé bottomsheet:', foundSheet);
-                    mbcdiDebug('] Trouvé body:', foundBody);
+                mbcdiDebug('[MBCDI v5.5.7] showCommerceCard DÉSACTIVÉ - émission événement mbcdi:showCommerceDetail');
+                mbcdiDebug('[MBCDI v5.5.7] Commerce:', commerce ? commerce.name : 'null');
+
+                if (!commerce || !commerce.id) {
+                    console.error('[MBCDI v5.5.7] Commerce invalide');
                     return;
                 }
 
-                state.isCommerceCardExpanded = !!expanded;
-
-                mbcdiDebug(' showCommerceCard] Construction HTML...');
-                var html = buildCommerceCardHTML(commerce);
-                mbcdiDebug(' showCommerceCard] HTML généré, longueur:', html.length);
-                
-                sheetBody.innerHTML = html;
-                mbcdiDebug(' showCommerceCard] HTML injecté');
-
-                bottomSheet.classList.add('mbcdi-visible');
-                mbcdiDebug(' showCommerceCard] Classe mbcdi-visible ajoutée');
-                
-                if (expanded) {
-                    bottomSheet.classList.add('mbcdi-expanded');
-                    state.isSheetExpanded = true;
-                } else {
-                    bottomSheet.classList.remove('mbcdi-expanded');
-                    state.isSheetExpanded = false;
-                }
-
-                mbcdiDebug(' showCommerceCard] Attachement événements...');
-                attachCommerceCardToggleEvent();
-                attachCommerceBackEvent();
-
-                // État de chargement itinéraire
-                var loadingEl = sheetBody.querySelector('.mbcdi-route-loading');
-                var contentEl = sheetBody.querySelector('.mbcdi-route-content');
-                if (loadingEl) loadingEl.style.display = 'block';
-                if (contentEl) contentEl.style.display = 'none';
-                
-                mbcdiDebug(' showCommerceCard] Fonction terminée');
-            }
-
-            function buildCommerceCardHTML(commerce) {
-                var logoHTML = '';
-                if (commerce.logoUrl) {
-                    logoHTML = '<img src="' + escapeHtml(commerce.logoUrl) + '" alt="' + escapeHtml(commerce.name) + '">';
-                } else {
-                    logoHTML = '<span class="mbcdi-commerce-emoji">🛒</span>';
-                }
-
-                var addressShort = commerce.address || '';
-                if (addressShort.length > 40) {
-                    addressShort = addressShort.substring(0, 40) + '...';
-                }
-
-                var html = '';
-                html += '<div class="mbcdi-commerce-card" data-commerce-id="' + escapeHtml(String(commerce.id)) + '">';
-                html +=   '<div class="mbcdi-commerce-card-header" id="mbcdi-commerce-header">';
-                html +=     '<div class="mbcdi-commerce-preview">';
-                html +=       '<div class="mbcdi-commerce-logo-small">' + logoHTML + '</div>';
-                html +=       '<div class="mbcdi-commerce-preview-info">';
-                html +=         '<h3 class="mbcdi-commerce-name-compact">' + escapeHtml(commerce.name || '') + '</h3>';
-                html +=         '<p class="mbcdi-commerce-address-compact">' + escapeHtml(addressShort) + '</p>';
-                html +=       '</div>';
-                html +=     '</div>';
-                html +=     '<button type="button" class="mbcdi-commerce-toggle" aria-label="Voir plus d\'informations">';
-                html +=       '<span class="mbcdi-toggle-icon">▼</span>';
-                html +=     '</button>';
-                html +=   '</div>';
-
-                html +=   '<div class="mbcdi-commerce-card-body" id="mbcdi-commerce-body">';
-                html +=     '<div class="mbcdi-commerce-details">';
-
-                if (commerce.address) {
-                    html += '<div class="mbcdi-info-row"><span class="mbcdi-icon">📍</span><span>' + escapeHtml(commerce.address) + '</span></div>';
-                }
-                if (commerce.phone) {
-                    html += '<div class="mbcdi-info-row"><span class="mbcdi-icon">📞</span><a href="tel:' + escapeHtml(commerce.phone) + '" class="mbcdi-phone-link">' + escapeHtml(commerce.phone) + '</a></div>';
-                }
-                if (commerce.website) {
-                    html += '<div class="mbcdi-info-row"><span class="mbcdi-icon">🌐</span><a href="' + escapeHtml(commerce.website) + '" target="_blank" rel="noopener" class="mbcdi-website-link">Voir le site web →</a></div>';
-                }
-                if (commerce.hours) {
-                    html += '<div class="mbcdi-info-row"><span class="mbcdi-icon">🕐</span><span>' + escapeHtml(commerce.hours) + '</span></div>';
-                }
-                if (commerce.description) {
-                    html += '<div class="mbcdi-commerce-description">' + escapeHtml(commerce.description) + '</div>';
-                }
-
-                html +=     '</div>';
-                html +=     '<div class="mbcdi-divider"></div>';
-
-                html +=     '<div class="mbcdi-route-section">';
-                html +=       '<h4 class="mbcdi-route-section-title">🗺️ Itinéraire</h4>';
-                html +=       '<div class="mbcdi-route-loading">Calcul en cours...</div>';
-                html +=       '<div class="mbcdi-route-content" style="display:none;"></div>';
-                html +=       '<button type="button" class="mbcdi-btn-back mbcdi-btn-back-to-list">← Retour à la carte</button>';
-                html +=     '</div>';
-
-                html +=   '</div>';
-                html += '</div>';
-
-                return html;
-            }
-
-            function attachCommerceCardToggleEvent() {
-                var header = document.getElementById('mbcdi-commerce-header');
-                var body = document.getElementById('mbcdi-commerce-body');
-                var toggleBtn = header ? header.querySelector('.mbcdi-commerce-toggle') : null;
-                var toggleIcon = toggleBtn ? toggleBtn.querySelector('.mbcdi-toggle-icon') : null;
-
-                if (!header || !toggleBtn || !body || !toggleIcon) return;
-
-                var toggleCard = function(e) {
-                    if (e && e.target && e.target.closest && e.target.closest('a')) return;
-
-                    state.isCommerceCardExpanded = !state.isCommerceCardExpanded;
-
-                    if (state.isCommerceCardExpanded) {
-                        body.classList.add('mbcdi-expanded');
-                        toggleIcon.textContent = '▲';
-                        bottomSheet.classList.add('mbcdi-expanded');
-                        state.isSheetExpanded = true;
-                    } else {
-                        body.classList.remove('mbcdi-expanded');
-                        toggleIcon.textContent = '▼';
-                        bottomSheet.classList.remove('mbcdi-expanded');
-                        state.isSheetExpanded = false;
-                    }
-                };
-
-                header.addEventListener('click', toggleCard);
-            }
-
-            function attachCommerceBackEvent() {
-                if (!sheetBody) return;
-                var btn = sheetBody.querySelector('.mbcdi-btn-back-to-list');
-                if (!btn) return;
-                btn.addEventListener('click', function() {
-                    resetCommerceSelection();
+                // Émettre événement pour que MBCDI_BSManager affiche le détail
+                var event = new CustomEvent('mbcdi:showCommerceDetail', {
+                    detail: { commerceId: commerce.id }
                 });
+                window.dispatchEvent(event);
+                mbcdiDebug('[MBCDI v5.5.7] Événement mbcdi:showCommerceDetail émis pour commerce:', commerce.id);
+            }
+
+            // DÉSACTIVÉ v5.5.7 - HTML généré par bottom-sheet-v5.5.0.js
+            function buildCommerceCardHTML(commerce) {
+                mbcdiDebug('[MBCDI v5.5.7] buildCommerceCardHTML DÉSACTIVÉ');
+                return '';
+            }
+
+            // DÉSACTIVÉ v5.5.7 - Toggle géré par MBCDI_BSManager
+            function attachCommerceCardToggleEvent() {
+                mbcdiDebug('[MBCDI v5.5.7] attachCommerceCardToggleEvent DÉSACTIVÉ');
+            }
+
+            // DÉSACTIVÉ v5.5.7 - Back géré par MBCDI_BSManager
+            function attachCommerceBackEvent() {
+                mbcdiDebug('[MBCDI v5.5.7] attachCommerceBackEvent DÉSACTIVÉ');
             }
 
             function resetCommerceSelection() {
@@ -1278,22 +1155,9 @@
                 return html;
             }
 
+            // DÉSACTIVÉ v5.5.7 - Affichage géré par MBCDI_BSManager via événement
             function displayRouteInCard(route) {
-                if (!sheetBody) return;
-
-                var loadingEl = sheetBody.querySelector('.mbcdi-route-loading');
-                var contentEl = sheetBody.querySelector('.mbcdi-route-content');
-
-                if (!contentEl) return;
-
-                if (loadingEl) loadingEl.style.display = 'none';
-
-                // V5.0.5: Pas d'affichage de distance/durée, pas d'étapes
-                // L'itinéraire est visible sur la carte uniquement
-                var html = '<div class="mbcdi-route-info">Itinéraire affiché sur la carte</div>';
-
-                contentEl.innerHTML = html;
-                contentEl.style.display = 'block';
+                mbcdiDebug('[MBCDI v5.5.7] displayRouteInCard DÉSACTIVÉ - utiliser mbcdi:routeCalculated');
             }
 
             function clearMapLayers() {
@@ -1815,11 +1679,12 @@
                 state.selectedCommerce = null;
                 state.currentRoute = null;
 
-                // Cacher le bottomsheet
-                if (bottomSheet) {
-                    bottomSheet.classList.remove('mbcdi-visible');
-                    bottomSheet.classList.remove('mbcdi-expanded');
-                }
+                // DÉSACTIVÉ v5.5.7 - Bottom sheet géré par MBCDI_BSManager
+                // L'événement mbcdi:stopRoute dans integration-v5.5.0.js gère le retour à la liste
+                // if (bottomSheet) {
+                //     bottomSheet.classList.remove('mbcdi-visible');
+                //     bottomSheet.classList.remove('mbcdi-expanded');
+                // }
 
                 // Réinitialiser le zoom pour afficher toute la destination
                 if (state.selectedDestinationId && data.destinations) {
@@ -2041,17 +1906,26 @@
             }
 
             /**
-             * V4.4: Affichage des résultats avec infos zone de livraison
+             * V5.5.7: Émet événement pour afficher la route dans le bottom sheet
              */
             function showResult(route) {
-                // V5.0.5: Pas d'affichage de distance/durée, pas d'étapes
-                // L'itinéraire est visible uniquement sur la carte
-                
+                mbcdiDebug('[MBCDI v5.5.7] showResult - émission événement mbcdi:routeCalculated');
+
                 if (sheetBody) sheetBody.classList.remove('mbcdi-loading');
 
-                // V5.0.5: Suppression complète de l'affichage des infos route
-                // Juste afficher la fiche commerce
-                displayRouteInCard(route);
+                // V5.5.7: Émettre événement pour que MBCDI_BSManager affiche le bottom sheet en mode route
+                if (state.selectedCommerce) {
+                    var event = new CustomEvent('mbcdi:routeCalculated', {
+                        detail: {
+                            commerce: state.selectedCommerce,
+                            route: route
+                        }
+                    });
+                    window.dispatchEvent(event);
+                    mbcdiDebug('[MBCDI v5.5.7] Événement mbcdi:routeCalculated émis');
+                } else {
+                    console.warn('[MBCDI v5.5.7] Pas de commerce sélectionné pour afficher la route');
+                }
             }
 
             function geolocateUser() {
