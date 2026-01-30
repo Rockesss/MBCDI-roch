@@ -514,3 +514,41 @@
         height: 22px;
     }
 }
+
+/* ========================================
+   ANIMATION TRANSITION TITRE v5.5.9
+   ======================================== */
+
+/* Transition fluide lors du changement de titre (liste <-> trajet) */
+.mbcdi-bs-list-title,
+.mbcdi-bs-route-title {
+    animation: mbcdi-title-fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animation apparition du titre avec fondu + slide */
+@keyframes mbcdi-title-fade-in {
+    0% {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animation disparition (pour transition fluide) */
+.mbcdi-bs-title-fade-out {
+    animation: mbcdi-title-fade-out 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes mbcdi-title-fade-out {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+}
