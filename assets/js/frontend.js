@@ -52,7 +52,8 @@
                 isSheetExpanded: false,
                 selectedCommerceId: 0,
                 selectedDestinationId: 0,
-                currentRoute: null // V4.4: Stocker la réponse complète
+                currentRoute: null, // V4.4: Stocker la réponse complète
+                isRouting: false // v5.5.9: État explicite du mode trajet
             };
 
             // Mode de transport (profil OSRM)
@@ -1636,10 +1637,147 @@
             }
 
             /**
+             * V5.5.9: ENTRE EN MODE TRAJET
+             * Encapsule toute la logique d'entrée en mode navigation
+             * - Masque les commerces
+             * - Crée le marker utilisateur avec pulse
+             * - Émet événement pour afficher bottom sheet en mode route
+             * - Ouvre automatiquement le bottom sheet
+             */
+            function enterRouteMode(route) {
+                mbcdiDebug('[MBCDI v5.5.9] 🚀 ENTRÉE EN MODE TRAJET');
+
+                // Marquer l'état
+                state.isRouting = true;
+
+                // 1. Masquer tous les markers de commerces
+                if (state.commerceClusterGroup) {
+                    // Masquer tous les markers du cluster
+                    state.commerceClusterGroup.eachLayer(function(layer) {
+                        layer.setOpacity(0);
+                    });
+                    // Retirer le cluster de la carte pour éviter les clics
+                    if (state.map.hasLayer(state.commerceClusterGroup)) {
+                        try {
+                            state.map.removeLayer(state.commerceClusterGroup);
+                            mbcdiDebug('[MBCDI v5.5.9] ✓ Commerces masqués');
+                        } catch (e) {
+                            console.warn('[MBCDI v5.5.9] Erreur masquage cluster:', e);
+                        }
+                    }
+                }
+
+                // 2. Créer marker utilisateur avec pulse si géolocalisation (pas de point de départ fixe)
+                if (!route.start_point_id && state.startPosition && state.startPosition.lat && state.startPosition.lng) {
+                    mbcdiDebug('[MBCDI v5.5.9] Création marker utilisateur avec pulse');
+
+                    // Supprimer l'ancien marker s'il existe
+                    if (state.userMarker) {
+                        try { state.map.removeLayer(state.userMarker); } catch (e) {}
+                    }
+
+                    // Créer icône avec pulse (utilise styles CSS existants)
+                    var pulseIcon = L.divIcon({
+                        html: '<div class="mbcdi-marker-pulse-container">' +
+                              '<div class="mbcdi-pulse-ring"></div>' +
+                              '<div class="mbcdi-marker-icon">📍</div>' +
+                              '</div>',
+                        className: 'mbcdi-user-marker',
+                        iconSize: [60, 60],
+                        iconAnchor: [30, 30]
+                    });
+
+                    state.userMarker = L.marker([state.startPosition.lat, state.startPosition.lng], {
+                        icon: pulseIcon,
+                        zIndexOffset: 10000
+                    }).addTo(state.map);
+
+                    mbcdiDebug('[MBCDI v5.5.9] ✓ Marker utilisateur créé avec pulse');
+                }
+
+                // 3. Émettre événement pour afficher le bottom sheet en mode route
+                if (state.selectedCommerce) {
+                    var event = new CustomEvent('mbcdi:routeCalculated', {
+                        detail: {
+                            commerce: state.selectedCommerce,
+                            route: route
+                        }
+                    });
+                    window.dispatchEvent(event);
+                    mbcdiDebug('[MBCDI v5.5.9] ✓ Événement mbcdi:routeCalculated émis');
+
+                    // 4. Forcer l'ouverture du bottom sheet après un délai pour laisser le manager s'initialiser
+                    setTimeout(function() {
+                        if (window.MBCDI_BSManager && typeof window.MBCDI_BSManager.expand === 'function') {
+                            window.MBCDI_BSManager.expand();
+                            mbcdiDebug('[MBCDI v5.5.9] ✓ Bottom sheet ouvert automatiquement');
+                        }
+                    }, 300);
+                } else {
+                    console.warn('[MBCDI v5.5.9] Pas de commerce sélectionné');
+                }
+
+                mbcdiDebug('[MBCDI v5.5.9] ✅ MODE TRAJET ACTIVÉ');
+            }
+
+            /**
+             * V5.5.9: SORT DU MODE TRAJET
+             * Encapsule toute la logique de sortie du mode navigation
+             * - Restaure l'affichage des commerces
+             * - Supprime le marker utilisateur
+             * - Réinitialise l'état
+             */
+            function exitRouteMode() {
+                mbcdiDebug('[MBCDI v5.5.9] 🛑 SORTIE DU MODE TRAJET');
+
+                if (!state.isRouting) {
+                    mbcdiDebug('[MBCDI v5.5.9] Déjà hors mode trajet, rien à faire');
+                    return;
+                }
+
+                // Marquer la sortie du mode trajet
+                state.isRouting = false;
+
+                // 1. Supprimer le marker utilisateur avec pulse
+                if (state.userMarker) {
+                    try {
+                        state.map.removeLayer(state.userMarker);
+                        state.userMarker = null;
+                        mbcdiDebug('[MBCDI v5.5.9] ✓ Marker utilisateur supprimé');
+                    } catch (e) {
+                        console.warn('[MBCDI v5.5.9] Erreur suppression marker:', e);
+                    }
+                }
+
+                // 2. Réafficher tous les commerces
+                if (state.commerceClusterGroup) {
+                    // Remettre l'opacité à tous les markers
+                    state.commerceClusterGroup.eachLayer(function(layer) {
+                        layer.setOpacity(1);
+                    });
+                    // Rajouter le cluster à la carte s'il a été retiré
+                    if (state.map && !state.map.hasLayer(state.commerceClusterGroup)) {
+                        try {
+                            state.map.addLayer(state.commerceClusterGroup);
+                            mbcdiDebug('[MBCDI v5.5.9] ✓ Commerces réaffichés');
+                        } catch (e) {
+                            console.warn('[MBCDI v5.5.9] Erreur réaffichage cluster:', e);
+                        }
+                    }
+                }
+
+                mbcdiDebug('[MBCDI v5.5.9] ✅ MODE TRAJET DÉSACTIVÉ');
+            }
+
+            /**
              * Réinitialise l'itinéraire et revient à l'écran de base
+             * V5.5.9: Utilise exitRouteMode() pour la sortie du mode trajet
              */
             function resetRoute() {
-                mbcdiDebug('[MBCDI] Réinitialisation de l\'itinéraire');
+                mbcdiDebug('[MBCDI v5.5.9] Réinitialisation de l\'itinéraire');
+
+                // V5.5.9: Sortir du mode trajet (restaure commerces, supprime marker utilisateur)
+                exitRouteMode();
 
                 // Effacer les tracés de la carte
                 if (state.routeLayer) {
@@ -1650,17 +1788,6 @@
                 if (state.walkingLineLayer) {
                     try { state.map.removeLayer(state.walkingLineLayer); } catch (e) {}
                     state.walkingLineLayer = null;
-                }
-
-                // Supprimer le marker utilisateur avec pulse (v5.5.8)
-                if (state.userMarker) {
-                    try {
-                        state.map.removeLayer(state.userMarker);
-                        state.userMarker = null;
-                        mbcdiDebug('[MBCDI v5.5.8] Marker utilisateur supprimé');
-                    } catch (e) {
-                        console.warn('[MBCDI v5.5.8] Erreur suppression marker utilisateur:', e);
-                    }
                 }
 
                 // Réinitialiser la rotation de la carte (v5.5.0)
@@ -1848,58 +1975,15 @@
                             state.map.fitBounds(state.routeLayer.getBounds(), { padding: [80, 120] });
                         }
 
-                        // Masquer le cluster des commerces pendant l'affichage de l'itinéraire (v5.5.8)
-                        if (state.commerceClusterGroup) {
-                            // Masquer tous les markers du cluster
-                            state.commerceClusterGroup.eachLayer(function(layer) {
-                                layer.setOpacity(0);
-                            });
-                            // Et retirer le cluster de la carte pour éviter les clics
-                            if (state.map.hasLayer(state.commerceClusterGroup)) {
-                                try {
-                                    state.map.removeLayer(state.commerceClusterGroup);
-                                    mbcdiDebug('[MBCDI v5.5.8] Cluster commerces masqué pendant itinéraire');
-                                } catch (e) {
-                                    console.warn('[MBCDI v5.5.8] Erreur masquage cluster:', e);
-                                }
-                            }
-                        }
-
-                        // Créer marker de position utilisateur avec pulse si géolocalisation (v5.5.8)
-                        if (!route.start_point_id && state.startPosition && state.startPosition.lat && state.startPosition.lng) {
-                            mbcdiDebug('[MBCDI v5.5.8] Création marker utilisateur avec pulse');
-
-                            // Supprimer l'ancien marker utilisateur s'il existe
-                            if (state.userMarker) {
-                                try {
-                                    state.map.removeLayer(state.userMarker);
-                                } catch (e) {}
-                            }
-
-                            // Créer icône avec pulse (utilise styles existants)
-                            var pulseIcon = L.divIcon({
-                                html: '<div class="mbcdi-marker-pulse-container">' +
-                                      '<div class="mbcdi-pulse-ring"></div>' +
-                                      '<div class="mbcdi-marker-icon">📍</div>' +
-                                      '</div>',
-                                className: 'mbcdi-user-marker',
-                                iconSize: [60, 60],
-                                iconAnchor: [30, 30]
-                            });
-
-                            state.userMarker = L.marker([state.startPosition.lat, state.startPosition.lng], {
-                                icon: pulseIcon,
-                                zIndexOffset: 10000
-                            }).addTo(state.map);
-
-                            mbcdiDebug('[MBCDI v5.5.8] Marker utilisateur avec pulse ajouté');
-                        }
+                        // V5.5.9: Le masquage des commerces et la création du marker utilisateur
+                        // sont maintenant gérés par enterRouteMode() dans showResult()
 
                         // Masquer les points de départ et zones de livraison non utilisés
                         if (route.start_point_id && route.delivery_zone_id) {
                             hideUnusedRoutePoints(route.start_point_id, route.delivery_zone_id);
                         }
 
+                        // V5.5.9: Active le mode trajet (masque commerces, crée marker, ouvre bottom sheet)
                         showResult(route);
                     } else {
                         // Erreur ou pas d'itinéraire
@@ -1948,26 +2032,16 @@
             }
 
             /**
-             * V5.5.7: Émet événement pour afficher la route dans le bottom sheet
+             * V5.5.9: Active le mode trajet et affiche la route
+             * Utilise enterRouteMode() pour encapsuler toute la logique
              */
             function showResult(route) {
-                mbcdiDebug('[MBCDI v5.5.7] showResult - émission événement mbcdi:routeCalculated');
+                mbcdiDebug('[MBCDI v5.5.9] showResult - activation mode trajet');
 
                 if (sheetBody) sheetBody.classList.remove('mbcdi-loading');
 
-                // V5.5.7: Émettre événement pour que MBCDI_BSManager affiche le bottom sheet en mode route
-                if (state.selectedCommerce) {
-                    var event = new CustomEvent('mbcdi:routeCalculated', {
-                        detail: {
-                            commerce: state.selectedCommerce,
-                            route: route
-                        }
-                    });
-                    window.dispatchEvent(event);
-                    mbcdiDebug('[MBCDI v5.5.7] Événement mbcdi:routeCalculated émis');
-                } else {
-                    console.warn('[MBCDI v5.5.7] Pas de commerce sélectionné pour afficher la route');
-                }
+                // V5.5.9: Entrer en mode trajet (masque commerces, crée marker, ouvre bottom sheet)
+                enterRouteMode(route);
             }
 
             function geolocateUser() {
