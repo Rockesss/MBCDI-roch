@@ -1,7 +1,7 @@
 /**
  * MBCDI Frontend Main - Point d'entrée modulaire
  * Orchestre tous les modules ES6
- * @version 5.5.0
+ * @version 5.5.1
  */
 
 // Import des modules

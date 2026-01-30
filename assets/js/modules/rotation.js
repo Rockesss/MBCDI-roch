@@ -1,7 +1,7 @@
 /**
  * MBCDI Rotation Module
  * Gestion de la rotation de carte Leaflet
- * @version 5.5.0
+ * @version 5.5.1
  */
 
 /**
