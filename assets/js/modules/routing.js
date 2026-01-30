@@ -6,6 +6,7 @@
 
 import { formatDistance, formatDuration } from './utils.js';
 import { getStepText } from './i18n.js';
+import { rotateToRoute } from './rotation.js';
 
 /**
  * Calcule un itinéraire via OSRM
@@ -174,4 +175,56 @@ export function createWalkingLine(start, end, options = {}) {
         [[start.lat, start.lng], [end.lat, end.lng]],
         { ...defaultOptions, ...options }
     );
+}
+
+/**
+ * Crée une polyline d'itinéraire avec rotation automatique de la carte
+ * @param {Object} map - Instance Leaflet
+ * @param {Object} route - Route OSRM
+ * @param {Object} options - Options
+ * @param {Object} options.polylineOptions - Options Leaflet polyline
+ * @param {boolean} options.autoRotate - Activer la rotation auto (défaut: true)
+ * @param {boolean} options.animateRotation - Animer la rotation (défaut: true)
+ * @param {number} options.rotationDuration - Durée rotation en ms (défaut: 1200)
+ * @returns {Object} { polyline, bearing } - Polyline créée et cap calculé
+ */
+export function createRoutePolylineWithRotation(map, route, options = {}) {
+    if (!map || !route || !route.geometry) {
+        console.error('[MBCDI Routing] Paramètres invalides pour createRoutePolylineWithRotation');
+        return null;
+    }
+
+    const defaultOptions = {
+        polylineOptions: {},
+        autoRotate: true,
+        animateRotation: true,
+        rotationDuration: 1200
+    };
+
+    const opts = { ...defaultOptions, ...options };
+
+    // Créer la polyline
+    const polyline = createRoutePolyline(route, opts.polylineOptions);
+
+    if (!polyline) {
+        return null;
+    }
+
+    // Appliquer la rotation automatique si demandé
+    let bearing = null;
+    if (opts.autoRotate && typeof map.setBearing === 'function') {
+        const coords = decodeGeometry(route.geometry);
+
+        if (coords && coords.length >= 2) {
+            bearing = rotateToRoute(map, coords, {
+                animate: opts.animateRotation,
+                duration: opts.rotationDuration
+            });
+        }
+    }
+
+    return {
+        polyline,
+        bearing
+    };
 }
