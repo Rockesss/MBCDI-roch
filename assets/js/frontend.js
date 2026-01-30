@@ -4,7 +4,7 @@
  * - Affichage distance à pied depuis zone
  * - Respect strict de l'ordre des étapes du BO
  * - Clustering commerces + fiche commerce rétractable
- * @version 5.5.0
+ * @version 5.5.1
  */
 (function() {
     'use strict';

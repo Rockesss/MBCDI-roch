@@ -2,7 +2,7 @@
  * MBCDI Frontend Patch
  * Connecte les nouvelles cartes avec le système de sélection existant
  * @package MBCDI
- * @version 5.5.0
+ * @version 5.5.1
  */
 
 (function() {
