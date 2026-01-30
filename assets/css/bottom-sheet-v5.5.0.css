@@ -18,6 +18,9 @@
     flex-direction: column !important;
     padding-bottom: env(safe-area-inset-bottom) !important;
     overflow: hidden !important;
+    min-height: 200px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     transform: translateY(calc(100% - 120px)) !important;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
